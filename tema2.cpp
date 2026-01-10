@@ -81,25 +81,14 @@ void Tema2::Init() {
     }
 
     {
-        gridWidth = 50;
-        gridHeight = 50;
-        railsGrid = RailGrid(gridWidth, gridHeight);
-        
-        railsGrid.createBridge({25, 27}, Direction::NORTH);
+        railsGrid.setRail(0, 0, true);
+        // railsGrid.setRail(25, 26, true);
+        // railsGrid.setRail(25, 27, true);
 
-        for (int y = 26; y > 8; y--) {
-            railsGrid.createSimpleRail(25, y, false);
-        }
+        // Cell cell1 = railsGrid.getCell(8, 8);
+        // Cell cell2 = railsGrid.getCell(40, 8);
 
-        for (int x = 27; x < 40; x++) {
-            railsGrid.createSimpleRail(x, 8, true);
-        }
-
-        for (int x = 25; x > 8; x--) {
-            railsGrid.createSimpleRail(x, 8, true);
-        }
-
-        railsGrid.linkRails();
+        // railsGrid.connectCells(cell1, cell2);
     }
 
     direction = 0;
@@ -108,19 +97,11 @@ void Tema2::Init() {
         Train train;
         Train carriage;
 
-        train.currentRail = railsGrid.cell(27, 8).rail;
         train.type = TrainType::TRAIN;
-        train.trainDir = Direction::EAST;
+        train.trainDir = Direction::NORTH;
         train.progress = 0.f;
         train.speed = 2.f;
         trains.push_back(train);
-
-        // carriage.currentRail = railsGrid.cell(4, 10).rail;
-        // carriage.type = TrainType::CARRIAGE;
-        // carriage.trainDir = Direction::EAST;
-        // carriage.progress = -2.1f;
-        // carriage.speed = 0.5f;
-        // trains.push_back(carriage);
     }
 }
 
@@ -258,10 +239,17 @@ void Tema2::Update(float deltaTimeSeconds) {
         RenderMesh(meshes["sphere"], shaders["VC"], modelMatrix);
     }
 
-    UpdateTrain(trains[0], deltaTimeSeconds);
-    DrawTrain(trains[0]);
+    glm::vec3 locPos = getTrainPos(trains[0]);
+    trainPath.push_back(locPos);
 
-    RenderRails(railsGrid);
+    while (trainPath.size() > 100) {
+        trainPath.pop_back();
+    }
+
+    // UpdateTrain(trains[0], deltaTimeSeconds, railsGrid);
+    // DrawTrain(trains[0], railsGrid);
+
+    RenderRails();
 
     MinimapRender();
 }
@@ -288,43 +276,18 @@ Direction Tema2::intToDirection(int dirInt) {
     return Direction::NORTH; // Default case
 }
 
-RailSegment* Tema2::bridgeExit(RailSegment* bridgeRoot, Direction dir) {
-    RailSegment* r = bridgeRoot;
-
-    while (r->nextSegments[(int)dir] &&
-           r->nextSegments[(int)dir]->type == RailType::BRIDGE_RAIL)
-    {
-        r = r->nextSegments[(int)dir];
+float Tema2::yawFromDir(Direction dir) {
+    switch (direction) {
+        case 0:
+            return glm::radians(0.0f);
+        case 1:
+            return glm::radians(-90.0f);
+        case 2:
+            return glm::radians(180.0f);
+        case 3:
+            return glm::radians(90.0f);
     }
-
-    return r;
-}
-
-void Tema2::UpdateTrain(Train& train, float deltaTime) {
-    train.progress += train.speed * deltaTime;
-
-    while (train.progress >= 1.0f) {
-        train.progress -= 1.0f;
-
-        RailSegment* next = train.currentRail->nextSegments[(int)train.trainDir];
-        if (!next) {
-            // end of track
-            train.speed = 0.0f;
-            return;
-        }
-        
-        train.currentRail = next;
-    }
-}
-
-glm::vec3 Tema2::getRailPos(const Cell& cell) {
-    return gridToWorld(cell.position);
-}
-
-float Tema2::getRailYaw(const RailSegment& rail) {
-    bool horizontal = rail.connections[(int)Direction::EAST] && rail.connections[(int)Direction::WEST];
-
-    return horizontal ? glm::radians(90.0f) : glm::radians(0.0f);
+    return glm::radians(0.0f);
 }
 
 glm::vec3 Tema2::directionToWorld(Direction dir) {
@@ -342,75 +305,131 @@ glm::vec3 Tema2::directionToWorld(Direction dir) {
 }
 
 glm::vec3 Tema2::getTrainPos(const Train& train) {
-    glm::vec3 base = gridToWorld(train.currentRail->cell);
+    glm::vec3 base = gridToWorld(train.gridPos.x, train.gridPos.y);
+    glm::vec3 dir = directionToWorld(train.trainDir);
 
-    glm::vec3 dir  = directionToWorld(train.trainDir);
-
-    return {
-        base.x + dir.x * train.progress * CELL_SIZE,
-        base.y + 0.45f,
-        base.z + dir.z * train.progress * CELL_SIZE
-    };
+    return base + dir * (train.progress * CELL_SIZE);
 }
 
-RenderTransform Tema2::buildRailTransform(const Cell& cell) {
-    const RailSegment& rail = *cell.rail;
+glm::vec3 Tema2::getCarriagePos(int index) {
+    int sample = int(index * CARRIAGE_DISTANCE / CELL_SIZE * 10);
 
-    glm::vec3 pos = gridToWorld(cell.position);
+    if (sample >= trainPath.size()) {
+        sample = trainPath.size() - 1;
+    }
 
-    RenderTransform t;
-    t.pos = pos;
-    t.yaw = getRailYaw(rail);
-
-    return t;
+    return trainPath[sample];
 }
 
-glm::mat4 Tema2::buildModelMatrix(const RenderTransform& rt) {
-    glm::mat4 model(1.0f);
-    model = glm::translate(model, glm::vec3(rt.pos.x, rt.pos.y, rt.pos.z));
-    model = glm::rotate(model, rt.yaw, glm::vec3(0,1,0));
-    return model;
+float Tema2::yawRailFromCell(const Cell& cell) {
+    bool north = cell.connections[0];
+    bool east = cell.connections[1];
+    bool south = cell.connections[2];
+    bool west = cell.connections[3];
+
+    if (east && west && !north && !south) {
+        return glm::radians(90.f);
+    }
+
+    if (north && south && !east && !west) {
+        return glm::radians(0.f);
+    }
+
+    return glm::radians(0.f);
 }
 
-void Tema2::DrawTrain(const Train& train) {
-    glm::vec3 pos = getTrainPos(train);
+glm::vec3 Tema2::gridToWorld(int x, int y) {
+    float wx = (x - gridWidth / 2.f) * CELL_SIZE;
+    float wz = (y - gridHeight / 2.f) * CELL_SIZE;
 
-    glm::mat4 modelMatrix(1.0f);
-    modelMatrix = glm::translate(modelMatrix, pos);
-    modelMatrix = glm::rotate(modelMatrix, getRailYaw(*train.currentRail), glm::vec3(0,1,0));
+    return glm::vec3(wx, 0.8f, wz);
+}
 
-    switch (train.type) {
-        case TRAIN:
-            RenderMesh(meshes["locomotive"], shaders["VC"], modelMatrix);
-            break;
-        case CARRIAGE:
-            RenderMesh(meshes["carriage1"], shaders["VC"], modelMatrix);
-            break;
+glm::ivec2 Tema2::worldToGrid(const glm::vec3& pos) {
+    float halfW = gridWidth * CELL_SIZE / 2.f;
+    float halfH = gridHeight * CELL_SIZE / 2.f;
+
+    int x = static_cast<int>((pos.x + halfW) / CELL_SIZE);
+    int y = static_cast<int>((pos.z + halfH) / CELL_SIZE);
+
+    return glm::ivec2(x, y);
+}
+
+void Tema2::UpdateTrain(Train& train, float dt, RailGrid& grid) {
+    train.progress += train.speed * dt;
+
+
+    while (train.progress >= 1.f) {
+        train.progress -= 1.f;
+
+        Cell cell = grid.getCell(train.gridPos.x, train.gridPos.y);
+        Direction nextDir = train.trainDir;
+
+        if (!cell.connections[direction]) {
+            Direction turnedDir = turnRight(train.trainDir);
+            Direction leftDir = turnLeft(train.trainDir);
+            Direction backDir = goBack(train.trainDir);
+
+            if (cell.connections[directionToInt(turnedDir)]) {
+                nextDir = turnedDir;
+            } else if (cell.connections[directionToInt(leftDir)]) {
+                nextDir = leftDir;
+            } else if (cell.connections[directionToInt(backDir)]) {
+                nextDir = backDir;
+            } else {
+                train.speed = 0.f;
+                return;
+            }
+        }
+
+        if (!cell.connections[directionToInt(nextDir)]) {
+            train.speed = 0.f;
+            return;
+        }
+
+        train.trainDir = nextDir;
     }
 }
 
-void Tema2::RenderRails(const RailGrid& grid) {
-    for (int x = 0; x < gridWidth; x++) {
-        for (int y = 0; y < gridHeight; y++) {
-            const Cell& cell = grid.cell(x, y);
-            
-            if (!cell.rail) {
-                continue;
-            }
+void Tema2::DrawTrain(const Train& train, const RailGrid& grid) {
+    glm::vec3 pos = train.gridPos;
 
-            RenderTransform rt = buildRailTransform(cell);
-            glm::mat4 modelMatrix = buildModelMatrix(rt);
-            switch (cell.rail->type) {
-                case RailType::RAIL:
-                    RenderMesh(meshes["rail"], shaders["VC"], modelMatrix);
-                    break;
-                case RailType::BRIDGE_RAIL:
-                    RenderMesh(meshes["bridgeRail"], shaders["VC"], modelMatrix);
-                    break;
-                case RailType::TUNNEL_RAIL:
-                    // Implement tunnel rail rendering if needed
-                    break;
-            }
+    glm::mat4 modelMatrix(1.0f);
+
+    printf("Train position: (%.2f, %.2f, %.2f)\n", pos.x, pos.y, pos.z);
+
+    modelMatrix = glm::translate(modelMatrix, pos);
+
+    float yaw = yawFromDir(train.trainDir);
+    modelMatrix = glm::rotate(modelMatrix, yaw, glm::vec3(0,1,0));
+
+    RenderMesh(meshes["locomotive"], shaders["VC"], modelMatrix);
+}
+
+void Tema2::DrawCarriages() {
+    for (int i = 0; i < numberOfCarriages; i++) {
+        glm::vec3 pos = getCarriagePos(i + 1);
+
+        glm::mat4 modelMatrix(1.0f);
+        modelMatrix = glm::translate(modelMatrix, pos);
+
+        RenderMesh(meshes["carriage1"], shaders["VC"], modelMatrix);
+    }
+}
+
+void Tema2::RenderRails() {
+    for (int y = 0; y < gridHeight; y++) {
+        for (int x = 0; x < gridWidth; x++) {
+            if (!railsGrid.hasRail(x, y)) continue;
+
+            Cell c = railsGrid.getCell(x, y);
+
+            glm::vec3 pos = gridToWorld(x, y);
+            glm::mat4 modelMatrix(1.0f);
+            modelMatrix = glm::translate(modelMatrix, pos);
+            float yaw = yawRailFromCell(c);
+            modelMatrix = glm::rotate(modelMatrix, yaw, glm::vec3(0,1,0));
+            RenderMesh(meshes["rail"], shaders["VC"], modelMatrix);
         }
     }
 }
@@ -745,19 +764,19 @@ void Tema2::OnKeyPress(int key, int mods) {
     }
 
     if (key == GLFW_KEY_W) {
-        direction = directionToInt(Direction::NORTH);
+        direction = 0;
     }
 
     if (key == GLFW_KEY_D) {
-        direction = directionToInt(Direction::EAST);
+        direction = 1;
     }
 
     if (key == GLFW_KEY_A) {
-        direction = directionToInt(Direction::WEST);
+        direction = 3;
     }
 
     if (key == GLFW_KEY_S) {
-        direction = directionToInt(Direction::SOUTH);
+        direction = 2;
     }
 }
 

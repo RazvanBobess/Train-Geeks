@@ -3,81 +3,111 @@
 #include <cmath>
 
 namespace t2 {
-    RailGrid::RailGrid() : m_width(0), m_height(0) {
+    RailGrid::RailGrid() : width(0), height(0) {
     }
 
-    Cell& RailGrid::cell(int x, int y) {
-        return m_cells[y * m_width + x];
+    glm::ivec2 RailGrid::dirOffset(Direction dir) {
+        switch (dir) {
+            case Direction::NORTH:
+                return glm::ivec2(0, -1);
+            case Direction::EAST:
+                return glm::ivec2(1, 0);
+            case Direction::SOUTH:
+                return glm::ivec2(0, 1);
+            case Direction::WEST:
+                return glm::ivec2(-1, 0);
+        }
+        return glm::ivec2(0, 0);
     }
 
-    RailGrid::RailGrid(int width, int height) : m_width(width), m_height(height) {
-        m_cells.resize(width * height);
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                m_cells[y * width + x].position = { x, y };
+    Cell RailGrid::getCell(int x, int y) {
+        Cell cell;
+        cell.x = x;
+        cell.y = y;
+        cell.isSwitch = false;
+        cell.connections = {false, false, false, false};
+
+        if (!hasRail(x, y)) return cell;
+
+        int connectionsCount = 0;
+
+        for (int dir = 0; dir < 4; dir++) {
+            Direction direction = static_cast<Direction>(dir);
+            glm::ivec2 offset = dirOffset(direction);
+
+            if (hasRail(x + offset.x, y + offset.y)) {
+                cell.connections[dir] = true;
+                connectionsCount++;
             }
         }
+
+        cell.isSwitch = (connectionsCount > 2);
+        return cell;
     }
 
-    RailGrid::~RailGrid(){
-        for (auto& c : m_cells) {
-            delete c.rail;
+    bool RailGrid::hasRail(int x, int y) {
+        if (x < 0 || y < 0 || x >= width || y >= height) {
+            return false;
         }
+        return railGrid[y * width + x];
     }
 
-    bool RailGrid::inBounds(const Vec2i& p) {
-        return p.x >= 0 && p.y >= 0 && p.x < m_width && p.y < m_height;
-    }
+    RailGrid::RailGrid(int columns, int rows)
+        : columns(columns), rows(rows) {
+            width = columns;
+            height = rows;
+            railGrid.resize(width * height, false);
 
-    void RailGrid::createSimpleRail(int x, int y, bool horizontal) {
-        RailSegment* rail = new RailSegment();
-        rail->type = RailType::RAIL;
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    railGrid[y * width + x] = false;
 
-        rail->cell.x = x;
-        rail->cell.y = y;
-        
-        if (horizontal) {
-            rail->connections[(int)Direction::EAST] = true;
-            rail->connections[(int)Direction::WEST] = true;
-        } else {
-            rail->connections[(int)Direction::NORTH] = true;
-            rail->connections[(int)Direction::SOUTH] = true;
-        }
-
-        cell(x, y).rail = rail;
-    }
-
-    void RailGrid::createBridge(const Vec2i& start, Direction dir) {
-        RailSegment* bridgeRoot = new RailSegment();
-        bridgeRoot->type = RailType::BRIDGE_RAIL;
-
-        bridgeRoot->cell.x = start.x;
-        bridgeRoot->cell.y = start.y;
-
-        bridgeRoot->connections[(int)dir] = true;
-        bridgeRoot->connections[(int)Opposite(dir)] = true;
-
-        cell(start.x, start.y).rail = bridgeRoot;
-    }
-
-    void RailGrid::linkRails() {
-        for (auto& c : m_cells) {
-            RailSegment* rail = c.rail;
-            if (!rail) continue;
-
-            for (int d = 0; d < 4; ++d) {
-                if (!rail->connections[d]) continue;
-
-                Vec2i npos = c.position + DirectionOffset((Direction)d);
-                if (!inBounds(npos)) continue;
-
-                RailSegment* neighbor = cell(npos.x, npos.y).rail;
-                if (!neighbor) continue;
-
-                if (neighbor->connections[(int)Opposite((Direction)d)]) {
-                    rail->nextSegments[d] = neighbor;
+                    bool isRail = (x == 0 || x == width - 1 || y == 0 || y == height - 1);
+                    railGrid[y * width + x] = isRail;
                 }
             }
         }
+
+    RailGrid::~RailGrid(){
+    }
+
+    void RailGrid::connectCells(int x1, int y1, int x2, int y2) {
+        int dirX = (x2 > x1) ? 1 : -1;
+        int dirY = (y2 > y1) ? 1 : -1;
+
+        for (int x = x1; x != x2; x += dirX) {
+            setRail(x, y1, true);
+        }
+
+        for (int y = y1; y != y2; y += dirY) {
+            setRail(x2, y, true);
+        }
+    }
+
+    void RailGrid::setRail(int x, int y, bool value) {
+        if (x < 0 || y < 0 || x >= width || y >= height) {
+            return;
+        }
+        railGrid[y * width + x] = value;
+    }
+
+    bool RailGrid::hasNeighbor(Cell cell, Direction dir) {
+        return cell.connections[static_cast<int>(dir)];
+    }
+
+    int RailGrid::numberOfConnections(Cell cell) {
+        int count = 0;
+        
+        bool north = cell.connections[0];
+        bool east = cell.connections[1];
+        bool south = cell.connections[2];
+        bool west = cell.connections[3];
+
+        if (north) count++;
+        if (east) count++;
+        if (south) count++;
+        if (west) count++;
+
+        return count;
     }
 }

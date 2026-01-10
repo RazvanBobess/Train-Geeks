@@ -23,9 +23,9 @@ namespace t2
             };
 
             struct Train {
-                RailSegment* currentRail = nullptr;
                 TrainType type;
                 Direction trainDir;
+                glm::vec3 gridPos;
                 float progress;
                 float speed;
             };
@@ -42,35 +42,31 @@ namespace t2
 
             glm::vec3 lerp(glm::vec3 start, glm::vec3 end, float t);
 
-            RailSegment* bridgeExit(RailSegment* bridgeRoot, Direction dir);
-            void UpdateTrain(Train& train, float deltaTime);
+            void UpdateTrain(Train& train, float deltaTime, RailGrid& grid);
 
-            inline glm::vec3 gridToWorld(const Vec2i& gridPos) {
-                float offsetx = (gridWidth * CELL_SIZE) / 2.f;
-                float offsety = (gridHeight * CELL_SIZE) / 2.f;
-
-                return glm::vec3(gridPos.x * CELL_SIZE - offsetx, 0.8f, gridPos.y * CELL_SIZE - offsety);
-            }
-
-            glm::vec3 getRailPos(const Cell& cell);
-            float getRailYaw(const RailSegment& rail);
             glm::vec3 directionToWorld(Direction dir);
+            Direction turnLeft(Direction dir);
+            Direction turnRight(Direction dir);
+            Direction goBack(Direction dir);
+
+            glm::vec3 gridToWorld(int x, int y);
+            glm::ivec2 worldToGrid(const glm::vec3& pos);
+
             glm::vec3 getTrainPos(const Train& train);
+            glm::vec3 getCarriagePos(int index);
 
-            RenderTransform buildRailTransform(const Cell& cell);
-            glm::mat4 buildModelMatrix(const RenderTransform& rt);
+            float yawFromDir(Direction dir);
+            float yawRailFromCell(const Cell& cell);
 
-            void DrawTrain(const Train& train);
-            void RenderRails(const RailGrid& grid);
+            void DrawTrain(const Train& train, const RailGrid& grid);
+            void DrawCarriages();
+            void RenderRails();
 
             void RenderMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix, Texture2D *texture=NULL);
             void RenderMeshMini(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix, Texture2D *texture = NULL);
             void MinimapRender();
-            glm::vec3 directionToVector(Direction dir);
 
-            Direction turnLeft(Direction dir);
-            Direction turnRight(Direction dir);
-            Direction goBack(Direction dir);
+            glm::vec3 directionToVector(Direction dir);
 
             Direction intToDirection(int dirInt);
             int directionToInt(Direction dir);
@@ -90,15 +86,18 @@ namespace t2
             int numberOfTrains = 1;
             int numberOfCarriages = 1;
 
-            RailGrid railsGrid;
+            RailGrid railsGrid{50, 50};
             float CELL_SIZE = 1.f;
-            int gridWidth;
-            int gridHeight;
+            int gridWidth = 50;
+            int gridHeight = 50;
 
             int direction;
             int availableDirections[4];
             int firstAvailableDirection;
             bool railChanged = false;
+
+            std::deque<glm::vec3> trainPath;
+            const float CARRIAGE_DISTANCE = 1.5f;
 
             camera::Camera *camera;
             camera::Camera *minimapCam;
