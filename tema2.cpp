@@ -156,67 +156,6 @@ void Tema2::Update(float deltaTimeSeconds) {
     glm::mat4 modelMatrix;
     glm::mat4 aux_mat;
 
-    {
-        // queue<Rail*> railsToRender;
-        // railsToRender.push(railRoad);
-
-        // for (Rail* r : rails) {
-        //     modelMatrix = glm::mat4(1);
-
-        //     int currentDirection = r->direction;
-
-        //     switch (r->type) {
-        //         case RAIL:
-        //             for (float i = 0; i < r->length; i++) {
-        //                 switch (currentDirection) {
-        //                     case NORTH:
-        //                         aux_mat = glm::translate(modelMatrix, r->startPos - glm::vec3(0.f, 0.f, i));
-        //                         aux_mat = glm::rotate(aux_mat, glm::radians(0.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                         break;
-        //                     case EAST:
-        //                         aux_mat = glm::translate(modelMatrix, r->startPos + glm::vec3(i, 0.f, 0.f));
-        //                         aux_mat = glm::rotate(aux_mat, glm::radians(-90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                         break;
-        //                     case SOUTH:
-        //                         aux_mat = glm::translate(modelMatrix, r->startPos + glm::vec3(0.f, 0.f, i));
-        //                         aux_mat = glm::rotate(aux_mat, glm::radians(180.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                         break;
-        //                     case WEST:
-        //                         aux_mat = glm::translate(modelMatrix, r->startPos - glm::vec3(i, 0.f, 0.f));
-        //                         aux_mat = glm::rotate(aux_mat, glm::radians(90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                         break;
-        //                 }
-        //             RenderMesh(meshes["rail"], shaders["VC"], aux_mat);
-        //             }
-        //             break;
-
-        //         case BRIDGE_RAIL:
-        //             aux_mat = glm::translate(modelMatrix, r->startPos);
-
-        //             switch (currentDirection) {
-        //                 case NORTH:
-        //                     aux_mat = glm::rotate(aux_mat, glm::radians(0.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                     break;
-        //                 case EAST:
-        //                     aux_mat = glm::rotate(aux_mat, glm::radians(-90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                     break;
-        //                 case SOUTH:
-        //                     aux_mat = glm::rotate(aux_mat, glm::radians(180.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                     break;
-        //                 case WEST:
-        //                     aux_mat = glm::rotate(aux_mat, glm::radians(90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                     break;
-        //             }
-        //             RenderMesh(meshes["bridgeRail"], shaders["VC"], aux_mat);
-        //             break;
-
-        //         case TUNNEL_RAIL:
-        //             // Implement tunnel rail rendering if needed
-        //             break;
-        //     }
-        // }
-    }
-
     // Terrain
 
     {
@@ -637,67 +576,6 @@ void Tema2::MinimapRender() {
 
         aux_mat = glm::translate(modelMatrix, glm::vec3(-25.f, 0.f, -6.f));
         RenderMeshMini(meshes["terrain"], shaders["VC"], aux_mat);
-    }
-
-    {
-        // queue<Rail*> railsToRender;
-        // railsToRender.push(railRoad);
-
-        // for (Rail* r : rails) {
-        //     modelMatrix = glm::mat4(1);
-
-        //     int currentDirection = r->direction;
-
-        //     switch (r->type) {
-        //         case RAIL:
-        //             for (float i = 0; i < r->length; i++) {
-        //                 switch (currentDirection) {
-        //                     case NORTH:
-        //                         aux_mat = glm::translate(modelMatrix, r->startPos - glm::vec3(0.f, 0.f, i));
-        //                         aux_mat = glm::rotate(aux_mat, glm::radians(0.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                         break;
-        //                     case EAST:
-        //                         aux_mat = glm::translate(modelMatrix, r->startPos + glm::vec3(i, 0.f, 0.f));
-        //                         aux_mat = glm::rotate(aux_mat, glm::radians(-90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                         break;
-        //                     case SOUTH:
-        //                         aux_mat = glm::translate(modelMatrix, r->startPos + glm::vec3(0.f, 0.f, i));
-        //                         aux_mat = glm::rotate(aux_mat, glm::radians(180.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                         break;
-        //                     case WEST:
-        //                         aux_mat = glm::translate(modelMatrix, r->startPos - glm::vec3(i, 0.f, 0.f));
-        //                         aux_mat = glm::rotate(aux_mat, glm::radians(90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                         break;
-        //                 }
-        //             RenderMeshMini(meshes["rail"], shaders["VC"], aux_mat);
-        //             }
-        //             break;
-
-        //         case BRIDGE_RAIL:
-        //             aux_mat = glm::translate(modelMatrix, r->startPos);
-
-        //             switch (currentDirection) {
-        //                 case NORTH:
-        //                     aux_mat = glm::rotate(aux_mat, glm::radians(0.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                     break;
-        //                 case EAST:
-        //                     aux_mat = glm::rotate(aux_mat, glm::radians(-90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                     break;
-        //                 case SOUTH:
-        //                     aux_mat = glm::rotate(aux_mat, glm::radians(180.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                     break;
-        //                 case WEST:
-        //                     aux_mat = glm::rotate(aux_mat, glm::radians(90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //                     break;
-        //             }
-        //             RenderMeshMini(meshes["bridgeRail"], shaders["VC"], aux_mat);
-        //             break;
-
-        //         case TUNNEL_RAIL:
-        //             // Implement tunnel rail rendering if needed
-        //             break;
-        //     }
-        // }
     }
 
     {
