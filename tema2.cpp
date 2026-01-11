@@ -27,8 +27,6 @@ void Tema2::Init() {
 
     const string sourceTextureDir = PATH_JOIN(window->props.selfDir, SOURCE_PATH::M1, "tema2", "textures");
 
-    firstAvailableDirection = -1;
-
     {
         Texture2D* texture = new Texture2D();
         texture->Load2D(PATH_JOIN(sourceTextureDir, "water_m.png").c_str(), GL_REPEAT);
@@ -82,47 +80,105 @@ void Tema2::Init() {
 
     {
 		railsGrid.setStraightRail(25, 27, Direction::NORTH, RailType::BRIDGE_RAIL);
-        railsGrid.setStraightRail(25, 8, Direction::NORTH, RailType::RAIL);
+        
+		railsGrid.connectCells(25, 7, 25, 27, RailType::RAIL);
+		railsGrid.connectCells(25, 28, 25, 46, RailType::RAIL);
+		railsGrid.setCellNeighbor(railsGrid.getCell(25, 27), Direction::NORTH, railsGrid.getCell(25, 26));
+        railsGrid.setCellNeighbor(railsGrid.getCell(25, 27), Direction::SOUTH, railsGrid.getCell(25, 28));
 
-		railsGrid.connectCells(25, 9, 25, 26, RailType::RAIL);
-		railsGrid.connectCells(25, 28, 25, 35, RailType::RAIL);
-		railsGrid.connectCells(25, 36, 25, 46, RailType::RAIL);
+		Cell& sw1 = railsGrid.getCell(25, 7);
+		
+        railsGrid.connectSwich(sw1, {
+            {Direction::WEST, &railsGrid.getCell(24, 7)},
+            {Direction::EAST, &railsGrid.getCell(26, 7)},
+            {Direction::SOUTH, &railsGrid.getCell(25, 9)}
+			});
 
 		railsGrid.connectCells(24, 7, 6, 7, RailType::RAIL);
-        railsGrid.connectCells(6, 8, 6, 26, RailType::RAIL);
+        railsGrid.connectCells(6, 7, 6, 27, RailType::RAIL);
+
+		Cell& sw2 = railsGrid.getCell(6, 7);
+        railsGrid.connectSwich(sw2, {
+           {Direction::EAST, &railsGrid.getCell(6, 7)},
+           {Direction::SOUTH, &railsGrid.getCell(7, 7)}
+            });
+
 		railsGrid.setStraightRail(6, 27, Direction::NORTH, RailType::BRIDGE_RAIL);
-		railsGrid.connectCells(6, 28, 6, 35, RailType::RAIL);
-		railsGrid.connectCells(7, 35, 25, 35, RailType::RAIL);
-		railsGrid.connectCells(6, 36, 6, 46, RailType::RAIL);
+
+        Cell& sw3 = railsGrid.getCell(6, 27);
+        sw3.connections.fill(false);
+        sw3.neighbors.fill(nullptr);
+
+        railsGrid.setCellNeighbor(sw3, Direction::NORTH, railsGrid.getCell(6, 26), true);
+		railsGrid.connectCells(6, 28, 6, 36, RailType::RAIL);
+        railsGrid.setCellNeighbor(sw3, Direction::SOUTH, railsGrid.getCell(6, 28), true);
+
+		railsGrid.connectCells(7, 35, 26, 35, RailType::RAIL);
+		railsGrid.connectCells(6, 36, 6, 47, RailType::RAIL);
+
+        Cell& sw4 = railsGrid.getCell(6, 35);
+        railsGrid.connectSwich(sw4, {
+           {Direction::WEST, &railsGrid.getCell(7, 35)},
+           {Direction::SOUTH, &railsGrid.getCell(6, 36)},
+           {Direction::NORTH, &railsGrid.getCell(6, 34)}
+            });
+        railsGrid.setCellNeighbor(railsGrid.getCell(7, 35), Direction::WEST, sw4);
+
+        railsGrid.connectCells(6, 46, 25, 46, RailType::RAIL);
+
+		Cell& sw6 = railsGrid.getCell(6, 46);
+        railsGrid.connectSwich(sw6, {
+           {Direction::EAST, &railsGrid.getCell(6, 46)},
+           {Direction::NORTH, &railsGrid.getCell(6, 46)}
+            });
+
+        Cell& sw5 = railsGrid.getCell(25, 35);
+        railsGrid.connectSwich(sw5, {
+           {Direction::WEST, &railsGrid.getCell(25, 34)},
+           {Direction::SOUTH, &railsGrid.getCell(26, 35)},
+           {Direction::NORTH, &railsGrid.getCell(24, 35)},
+           {Direction::EAST, &railsGrid.getCell(25, 36)}
+            });
+
+        railsGrid.setCellNeighbor(railsGrid.getCell(25, 36), Direction::WEST, sw5);
+        railsGrid.setCellNeighbor(railsGrid.getCell(25, 34), Direction::WEST, sw5);
+        railsGrid.setCellNeighbor(railsGrid.getCell(24, 35), Direction::NORTH, sw5);
+        railsGrid.setCellNeighbor(railsGrid.getCell(26, 35), Direction::SOUTH, sw5);
+
 		railsGrid.connectCells(26, 35, 38, 35, RailType::RAIL);
-		railsGrid.connectCells(7, 46, 25, 46, RailType::RAIL);
 		railsGrid.connectCells(26, 46, 38, 46, RailType::RAIL);
 
         railsGrid.connectCells(26, 7, 38, 7, RailType::RAIL);
-		railsGrid.connectCells(38, 8, 38, 19, RailType::RAIL);
-        railsGrid.connectCells(39, 7, 45, 7, RailType::RAIL);
-		railsGrid.connectCells(45, 8, 45, 19, RailType::RAIL);
-		railsGrid.connectCells(44, 19, 38, 19, RailType::RAIL);
+		//railsGrid.connectCells(38, 8, 38, 19, RailType::RAIL);
+  //      railsGrid.connectCells(39, 7, 45, 7, RailType::RAIL);
+		//railsGrid.connectCells(45, 8, 45, 19, RailType::RAIL);
+		//railsGrid.connectCells(44, 19, 38, 19, RailType::RAIL);
 
-        railsGrid.connectCells(38, 20, 38, 26, RailType::RAIL);
-        railsGrid.setStraightRail(38, 27, Direction::NORTH, RailType::BRIDGE_RAIL);
-		railsGrid.connectCells(38, 28, 38, 35, RailType::RAIL);
-		railsGrid.connectCells(39, 35, 46, 35, RailType::RAIL);
-		railsGrid.connectCells(46, 36, 46, 46, RailType::RAIL);
-		railsGrid.connectCells(39, 46, 46, 46, RailType::RAIL);
-		railsGrid.connectCells(38, 36, 38, 46, RailType::RAIL);
+  //      railsGrid.connectCells(38, 20, 38, 26, RailType::RAIL);
+  //      railsGrid.setStraightRail(38, 27, Direction::NORTH, RailType::BRIDGE_RAIL);
+		//railsGrid.connectCells(38, 28, 38, 35, RailType::RAIL);
+		//railsGrid.connectCells(39, 35, 46, 35, RailType::RAIL);
+		//railsGrid.connectCells(46, 36, 46, 46, RailType::RAIL);
+		//railsGrid.connectCells(39, 46, 46, 46, RailType::RAIL);
+		//railsGrid.connectCells(38, 36, 38, 46, RailType::RAIL);
+
+		railsGrid.buildDefaultNeighbors();
     }
 
     direction = 0;
+	trainWaiting = true;
 
     {
         Train train;
         Train carriage;
 
         train.type = TrainType::TRAIN;
-        train.trainDir = Direction::NORTH;
+        train.trainDir = Direction::SOUTH;
+        train.gridPos = glm::ivec2(6, 35);
+		train.nextDir = Direction::SOUTH;
+		train.request = false;
         train.progress = 0.f;
-        train.speed = 2.f;
+        train.speed = 3.f;
         trains.push_back(train);
     }
 }
@@ -200,15 +256,8 @@ void Tema2::Update(float deltaTimeSeconds) {
         RenderMesh(meshes["sphere"], shaders["VC"], modelMatrix);
     }
 
-    glm::vec3 locPos = getTrainPos(trains[0]);
-    trainPath.push_back(locPos);
-
-    while (trainPath.size() > 100) {
-        trainPath.pop_back();
-    }
-
-    // UpdateTrain(trains[0], deltaTimeSeconds, railsGrid);
-    // DrawTrain(trains[0], railsGrid);
+    UpdateTrain(trains[0], deltaTimeSeconds, railsGrid);
+    DrawTrain(trains[0], railsGrid);
 
     RenderRails();
 
@@ -265,13 +314,6 @@ glm::vec3 Tema2::directionToWorld(Direction dir) {
     return glm::vec3(0.f, 0.f, 0.f);
 }
 
-glm::vec3 Tema2::getTrainPos(const Train& train) {
-    glm::vec3 base = gridToWorld(train.gridPos.x, train.gridPos.y);
-    glm::vec3 dir = directionToWorld(train.trainDir);
-
-    return base + dir * (train.progress * CELL_SIZE);
-}
-
 glm::vec3 Tema2::getCarriagePos(int index) {
     int sample = int(index * CARRIAGE_DISTANCE / CELL_SIZE * 10);
 
@@ -299,57 +341,90 @@ glm::ivec2 Tema2::worldToGrid(const glm::vec3& pos) {
     return glm::ivec2(x, y);
 }
 
+Direction Tema2::opposite(Direction dir) {
+    switch (dir) {
+    case Direction::NORTH:
+        return Direction::SOUTH;
+    case Direction::EAST:
+        return Direction::WEST;
+    case Direction::SOUTH:
+        return Direction::NORTH;
+    case Direction::WEST:
+        return Direction::EAST;
+    }
+    return Direction::NORTH; // Default case
+}
+
+glm::vec3 Tema2::getTrainPos(const Train& train, const RailGrid& grid) {
+
+    glm::vec3 pos0 = gridToWorld(train.gridPos.x, train.gridPos.y);
+
+    glm::ivec2 offset = grid.dirOffsetConst(train.trainDir);
+
+    glm::vec3 pos1 = gridToWorld(train.gridPos.x + offset.x, train.gridPos.y + offset.y);
+
+    return glm::mix(pos0, pos1, train.progress);
+}
+
 void Tema2::UpdateTrain(Train& train, float dt, RailGrid& grid) {
     train.progress += train.speed * dt;
-
 
     while (train.progress >= 1.f) {
         train.progress -= 1.f;
 
-        Cell cell = grid.getCell(train.gridPos.x, train.gridPos.y);
-        Direction nextDir = train.trainDir;
+        int nx, ny;
+        Cell& curCell = grid.getCell(train.gridPos.x, train.gridPos.y);
 
-        if (!cell.connections[direction]) {
-            Direction turnedDir = turnRight(train.trainDir);
-            Direction leftDir = turnLeft(train.trainDir);
-            Direction backDir = goBack(train.trainDir);
+        if (curCell.isSwitch) {
+            if (train.request) {
+                int reqDir = directionToInt(train.nextDir);
+                if (curCell.connections[reqDir]) {
+                    train.trainDir = train.nextDir;
+                    train.request = false;
+                    trainWaiting = false;
+                }
+                else {
 
-            if (cell.connections[directionToInt(turnedDir)]) {
-                nextDir = turnedDir;
-            }
-            else if (cell.connections[directionToInt(leftDir)]) {
-                nextDir = leftDir;
-            }
-            else if (cell.connections[directionToInt(backDir)]) {
-                nextDir = backDir;
+                    trainWaiting = true;
+                    train.progress = 1.f;
+                    return;
+                }
             }
             else {
-                train.speed = 0.f;
+                trainWaiting = true;
+                train.progress = 1.f;
                 return;
             }
         }
 
-        if (!cell.connections[directionToInt(nextDir)]) {
-            train.speed = 0.f;
+        printf("Train at (%d, %d), dir %d\n", train.gridPos.x, train.gridPos.y, directionToInt(train.trainDir));
+        printf("Connections: N:%d E:%d S:%d W:%d\n", curCell.connections[0], curCell.connections[1], curCell.connections[2], curCell.connections[3]);
+        printf("Is switch: %d\n", curCell.isSwitch);
+
+        if (!grid.getNextCell(train.gridPos.x, train.gridPos.y, train.trainDir, nx, ny)) {
+
+            train.progress = 1.f;
             return;
         }
 
-        train.trainDir = nextDir;
+        train.gridPos = { nx, ny };
+
+        Cell& newCell = grid.getCell(nx, ny);
+        if (newCell.isSwitch) {
+            trainWaiting = true;
+            return;
+        }
     }
 }
 
 void Tema2::DrawTrain(const Train& train, const RailGrid& grid) {
-    glm::vec3 pos = train.gridPos;
+ 
+	glm::vec3 pos = getTrainPos(train, grid);
+    float yaw = yawFromDir(train.trainDir);
 
     glm::mat4 modelMatrix(1.0f);
-
-    printf("Train position: (%.2f, %.2f, %.2f)\n", pos.x, pos.y, pos.z);
-
     modelMatrix = glm::translate(modelMatrix, pos);
-
-    float yaw = yawFromDir(train.trainDir);
     modelMatrix = glm::rotate(modelMatrix, yaw, glm::vec3(0, 1, 0));
-
     RenderMesh(meshes["locomotive"], shaders["VC"], modelMatrix);
 }
 
@@ -377,7 +452,6 @@ void Tema2::RenderRails() {
             glm::mat4 modelMatrix(1.0f);
             modelMatrix = glm::translate(modelMatrix, pos);
             modelMatrix = glm::rotate(modelMatrix, yaw, glm::vec3(0, 1, 0));
-            //modelMatrix = glm::translate(modelMatrix, -RAIL_PIVOT_OFF);
 
             switch (railsGrid.getRailType(x, y)) {
                 case RailType::RAIL:
@@ -409,7 +483,6 @@ void Tema2::RenderRailsMini() {
             glm::mat4 modelMatrix(1.0f);
             modelMatrix = glm::translate(modelMatrix, pos);
             modelMatrix = glm::rotate(modelMatrix, yaw, glm::vec3(0, 1, 0));
-			//modelMatrix = glm::translate(modelMatrix, -RAIL_PIVOT_OFF);
 
             switch (railsGrid.getRailType(x, y)) {
             case RailType::RAIL:
@@ -702,20 +775,42 @@ void Tema2::OnKeyPress(int key, int mods) {
         renderCameraTarget = !renderCameraTarget;
     }
 
-    if (key == GLFW_KEY_W) {
-        direction = 0;
-    }
+    if (window->MouseHold(GLFW_MOUSE_BUTTON_RIGHT)) {
+        return;
+	}
 
-    if (key == GLFW_KEY_D) {
-        direction = 1;
-    }
+    int direction = -1;
+	
+    if (key == GLFW_KEY_W) direction = 0;
+    if (key == GLFW_KEY_D) direction = 1;
+    if (key == GLFW_KEY_S) direction = 2;
+    if (key == GLFW_KEY_A) direction = 3;
 
-    if (key == GLFW_KEY_A) {
-        direction = 3;
-    }
+	printf("Key pressed: %d\n", direction);
 
-    if (key == GLFW_KEY_S) {
-        direction = 2;
+    if (direction != -1) {
+        Direction dir = Direction::NORTH;
+        
+        switch (direction) {
+        case 0:
+			dir = trains[0].trainDir;
+            break;
+        case 1:
+			dir = turnRight(trains[0].trainDir);
+			break;
+        case 2:
+			dir = goBack(trains[0].trainDir);
+			break;
+		case 3:
+			dir = turnLeft(trains[0].trainDir);
+        }
+
+        Cell& cur = railsGrid.getCell(trains[0].gridPos.x, trains[0].gridPos.y);
+
+        if (cur.connections[direction]) {
+            trains[0].nextDir = dir;
+            trains[0].request = true;
+        }
     }
 }
 

@@ -22,6 +22,7 @@ namespace t2 {
     struct Cell {
         int x, y;
         bool isSwitch;
+		RailType railType;
         Direction dir;
         std::array<bool, 4> connections;
 		std::array<Cell*, 4> neighbors = { nullptr, nullptr, nullptr, nullptr };
@@ -30,31 +31,58 @@ namespace t2 {
     class RailGrid {
     public:
         RailGrid(int width, int height);
-
         RailGrid();
-
         ~RailGrid();
-        bool hasRail(int x, int y);
 
-        void connectCells(int x1, int y1, int x2, int y2, RailType rail = RailType::NULLRAIL);
-        void setRail(int x, int y, bool value = true, RailType rail = RailType::NULLRAIL);
-		void setStraightRail(int x, int y, Direction dir, RailType rail = RailType::NULLRAIL);
-        void setCellNeighbor(Cell& cell, Direction dir, Cell& neigh);
-
-        bool hasNeighbor(Cell cell, Direction dir);
-        Cell getCell(int x, int y);
 		RailType getRailType(int x, int y);
-
+        Cell& getCell(int x, int y);
+        bool hasRail(int x, int y);
+		bool getNextCell(int x, int y, Direction dir, int& xout, int& yout);
+        void connectCells(int x1, int y1, int x2, int y2, RailType rail = RailType::NULLRAIL);
+		void setCellSwitch(Cell& cell, bool isSwitch = false);
+        bool hasNeighbor(Cell cell, Direction dir);
         int numberOfConnections(Cell cell);
+		void setStraightRail(int x, int y, Direction dir, RailType rail = RailType::NULLRAIL);
+		void buildDefaultNeighbors();
+        bool canMove(int x, int y, Direction dir);
         glm::ivec2 dirOffset(Direction dir);
+        Direction intToDirection(int value) {
+            switch (value) {
+            case 0:
+                return Direction::NORTH;
+            case 1:
+                return Direction::EAST;
+            case 2:
+                return Direction::SOUTH;
+            case 3:
+                return Direction::WEST;
+            default:
+                return Direction::NORTH;
+            }
+		}
+        const glm::ivec2& dirOffsetConst(Direction dir) const {
+            switch (dir) {
+            case Direction::NORTH:
+                return glm::ivec2(0, -1);
+            case Direction::EAST:
+                return glm::ivec2(1, 0);
+            case Direction::SOUTH:
+                return glm::ivec2(0, 1);
+            case Direction::WEST:
+                return glm::ivec2(-1, 0);
+            }
+            return glm::ivec2(0, 0);
+		}
+
+        void setCellNeighbor(Cell& cell, Direction dir, Cell& neigh, bool skipMiddle = false);
+		void connectSwich(Cell& sw, const std::vector<std::pair<Direction, Cell*>>& neighbors);
 
     private:
         int width;
         int height;
         int columns;
         int rows;
-        std::vector<bool> railGrid;
-		std::vector<RailType> railTypes;
-        std::vector<Direction> railDirs;
+
+		std::vector<Cell> cells;
     };
 }

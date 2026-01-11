@@ -23,11 +23,14 @@ namespace t2
         };
 
         struct Train {
+			glm::ivec2 gridPos;
             TrainType type;
             Direction trainDir;
-            glm::vec3 gridPos;
             float progress;
             float speed;
+
+            Direction nextDir;
+            bool request;
         };
 
         Tema2();
@@ -51,7 +54,7 @@ namespace t2
         glm::vec3 gridToWorld(int x, int y);
         glm::ivec2 worldToGrid(const glm::vec3& pos);
 
-        glm::vec3 getTrainPos(const Train& train);
+        glm::vec3 getTrainPos(const Train& train, const RailGrid& grid);
         glm::vec3 getCarriagePos(int index);
 
         float yawFromDir(Direction dir);
@@ -70,6 +73,7 @@ namespace t2
 
         Direction intToDirection(int dirInt);
         int directionToInt(Direction dir);
+		Direction opposite(Direction dir);
 
         void OnInputUpdate(float deltaTime, int mods) override;
         void OnKeyPress(int key, int mods) override;
@@ -93,10 +97,9 @@ namespace t2
 
 		glm::vec3 RAIL_PIVOT_OFF = glm::vec3(0.5f, 0.f, 0.5f);
 
+        int input;
         int direction;
-        int availableDirections[4];
-        int firstAvailableDirection;
-        bool railChanged = false;
+        bool trainWaiting;
 
         std::deque<glm::vec3> trainPath;
         const float CARRIAGE_DISTANCE = 1.5f;
