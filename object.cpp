@@ -169,7 +169,7 @@ Mesh* object3D::CreateLocomotive
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.45f, 1.f);
     createCube(corner, 1.f, 0.2f, 2.f, YELLOW_COLOR, vertices, indices);
 
     glm::vec3 cabinCorner = corner + glm::vec3(0.f, 0.2f, 0.f);
@@ -208,7 +208,7 @@ Mesh* object3D::CreateCarriage
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.45f, 1.f);
     createCube(corner, 1.f, 0.2f, 2.f, YELLOW_COLOR, vertices, indices);
 
     glm::vec3 cabinCorner = corner + glm::vec3(0.f, 0.2f, 0.f);
