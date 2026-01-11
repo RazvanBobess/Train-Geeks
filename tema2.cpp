@@ -86,6 +86,7 @@ void Tema2::Init() {
 
 		railsGrid.connectCells(25, 9, 25, 26, RailType::RAIL);
 		railsGrid.connectCells(25, 28, 25, 35, RailType::RAIL);
+		railsGrid.connectCells(25, 36, 25, 46, RailType::RAIL);
 
 		railsGrid.connectCells(24, 7, 6, 7, RailType::RAIL);
         railsGrid.connectCells(6, 8, 6, 26, RailType::RAIL);
@@ -93,9 +94,23 @@ void Tema2::Init() {
 		railsGrid.connectCells(6, 28, 6, 35, RailType::RAIL);
 		railsGrid.connectCells(7, 35, 25, 35, RailType::RAIL);
 		railsGrid.connectCells(6, 36, 6, 46, RailType::RAIL);
+		railsGrid.connectCells(26, 35, 38, 35, RailType::RAIL);
 		railsGrid.connectCells(7, 46, 25, 46, RailType::RAIL);
+		railsGrid.connectCells(26, 46, 38, 46, RailType::RAIL);
 
         railsGrid.connectCells(26, 7, 38, 7, RailType::RAIL);
+		railsGrid.connectCells(38, 8, 38, 19, RailType::RAIL);
+        railsGrid.connectCells(39, 7, 45, 7, RailType::RAIL);
+		railsGrid.connectCells(45, 8, 45, 19, RailType::RAIL);
+		railsGrid.connectCells(44, 19, 38, 19, RailType::RAIL);
+
+        railsGrid.connectCells(38, 20, 38, 26, RailType::RAIL);
+        railsGrid.setStraightRail(38, 27, Direction::NORTH, RailType::BRIDGE_RAIL);
+		railsGrid.connectCells(38, 28, 38, 35, RailType::RAIL);
+		railsGrid.connectCells(39, 35, 46, 35, RailType::RAIL);
+		railsGrid.connectCells(46, 36, 46, 46, RailType::RAIL);
+		railsGrid.connectCells(39, 46, 46, 46, RailType::RAIL);
+		railsGrid.connectCells(38, 36, 38, 46, RailType::RAIL);
     }
 
     direction = 0;
