@@ -241,7 +241,7 @@ Mesh* object3D::CreateRail
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, 0.5f);
     createCube(corner, 0.2f, 0.04f, 1.f, GRAY_COLOR, vertices, indices);
     createCube(corner + glm::vec3(0.8f, 0.f, 0.f), 0.2f, 0.04f, 1.f, GRAY_COLOR, vertices, indices);
 
@@ -259,7 +259,7 @@ Mesh* object3D::CreateBridgeRail
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, 0.5f);
 
     createCube(corner, 0.2f, 0.04f, 5.f, GRAY_COLOR, vertices, indices);
     createCube(corner + glm::vec3(0.8f, 0.f, 0.f), 0.2f, 0.04f, 5.f, GRAY_COLOR, vertices, indices);
