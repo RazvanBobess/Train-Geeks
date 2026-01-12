@@ -63,6 +63,7 @@ namespace t2
         void DrawCarriages();
         void RenderRails();
 		void RenderRailsMini();
+		void DrawTrainMini(const Train& train, const RailGrid& grid);
 
         void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = NULL);
         void RenderMeshMini(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = NULL);

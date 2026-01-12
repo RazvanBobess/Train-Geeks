@@ -76,6 +76,9 @@ void Tema2::Init() {
 
         Mesh* station2 = object3D::CreateStation2("station2", glm::vec3(0.f, 0.f, 0.f));
         AddMeshToList(station2);
+
+        Mesh* cube = object3D::RenderCube("cube", glm::vec3(0.f, 0.f, 0.f));
+        AddMeshToList(cube);
     }
 
     {
@@ -309,6 +312,76 @@ void Tema2::Update(float deltaTimeSeconds) {
         modelMatrix = glm::scale(modelMatrix, glm::vec3(4.6f, 0.1f, 50));
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0.1f, 0.5f, 0.f));
         RenderMesh(meshes["water"], shaders["VC"], modelMatrix, mapTextures["water_m"]);
+
+		glm::vec3 p1 = gridToWorld(25, 7);
+		modelMatrix = glm::mat4(1);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(p1.x, -0.1f, p1.z));
+		RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p2 = gridToWorld(6, 7);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p2.x, -0.1f, p2.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p4 = gridToWorld(6, 35);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p4.x, -0.1f, p4.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p5 = gridToWorld(25, 35);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p5.x, -0.1f, p5.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p6 = gridToWorld(6, 46);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p6.x, -0.1f, p6.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p7 = gridToWorld(25, 46);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p7.x, -0.1f, p7.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p8 = gridToWorld(38, 7);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p8.x, -0.1f, p8.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p9 = gridToWorld(45, 7);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p9.x, -0.1f, p9.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p10 = gridToWorld(45, 19);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p10.x, -0.1f, p10.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p11 = gridToWorld(38, 19);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p11.x, -0.1f, p11.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p13 = gridToWorld(38, 35);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p13.x, -0.1f, p13.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p14 = gridToWorld(38, 46);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p14.x, -0.1f, p14.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p15 = gridToWorld(46, 35);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p15.x, -0.1f, p15.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p16 = gridToWorld(46, 46);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p16.x, -0.1f, p16.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
     }
 
     {
@@ -493,6 +566,17 @@ void Tema2::DrawTrain(const Train& train, const RailGrid& grid) {
     RenderMesh(meshes["locomotive"], shaders["VC"], modelMatrix);
 }
 
+void Tema2::DrawTrainMini(const Train& train, const RailGrid& grid) {
+
+    glm::vec3 pos = getTrainPos(train, grid);
+    float yaw = yawFromDir(train.trainDir);
+
+    glm::mat4 modelMatrix(1.0f);
+    modelMatrix = glm::translate(modelMatrix, pos);
+    modelMatrix = glm::rotate(modelMatrix, yaw, glm::vec3(0, 1, 0));
+    RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+}
+
 void Tema2::DrawCarriages() {
     for (int i = 0; i < numberOfCarriages; i++) {
         glm::vec3 pos = getCarriagePos(i + 1);
@@ -673,39 +757,6 @@ void Tema2::MinimapRender() {
     glm::mat4 aux_mat;
 
     {
-        // for (int i = 0; i < trains.size(); i++) {
-        //     Train &train = trains[i];
-
-        //     modelMatrix = glm::mat4(1);
-        //     aux_mat = glm::translate(modelMatrix, train.position);
-
-        //     switch (train.currentRail->direction) {
-        //         case NORTH:
-        //             aux_mat = glm::rotate(aux_mat, glm::radians(0.0f), glm::vec3(0.f, 1.f, 0.f));
-        //             break;
-        //         case EAST:
-        //             aux_mat = glm::rotate(aux_mat, glm::radians(-90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //             break;
-        //         case SOUTH:
-        //             aux_mat = glm::rotate(aux_mat, glm::radians(180.0f), glm::vec3(0.f, 1.f, 0.f));
-        //             break;
-        //         case WEST:
-        //             aux_mat = glm::rotate(aux_mat, glm::radians(90.0f), glm::vec3(0.f, 1.f, 0.f));
-        //             break;
-        //     }
-
-        //     switch (train.type) {
-        //         case TRAIN:
-        //             RenderMeshMini(meshes["locomotive"], shaders["VC"], aux_mat);
-        //             break;
-        //         case CARRIAGE:
-        //             RenderMeshMini(meshes["carriage1"], shaders["VC"], aux_mat);
-        //             break;
-        //     }
-        // }
-    }
-
-    {
         modelMatrix = glm::mat4(1);
         modelMatrix = glm::scale(modelMatrix, glm::vec3(1.f, 0.2f, 0.457f));
 
@@ -714,6 +765,76 @@ void Tema2::MinimapRender() {
 
         aux_mat = glm::translate(modelMatrix, glm::vec3(-25.f, 0.f, -6.f));
         RenderMeshMini(meshes["terrain"], shaders["VC"], aux_mat);
+
+        glm::vec3 p1 = gridToWorld(25, 7);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p1.x, -0.1f, p1.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p2 = gridToWorld(6, 7);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p2.x, -0.1f, p2.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p4 = gridToWorld(6, 35);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p4.x, -0.1f, p4.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p5 = gridToWorld(25, 35);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p5.x, -0.1f, p5.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p6 = gridToWorld(6, 46);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p6.x, -0.1f, p6.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p7 = gridToWorld(25, 46);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p7.x, -0.1f, p7.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p8 = gridToWorld(38, 7);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p8.x, -0.1f, p8.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p9 = gridToWorld(45, 7);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p9.x, -0.1f, p9.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p10 = gridToWorld(45, 19);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p10.x, -0.1f, p10.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p11 = gridToWorld(38, 19);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p11.x, -0.1f, p11.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p13 = gridToWorld(38, 35);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p13.x, -0.1f, p13.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p14 = gridToWorld(38, 46);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p14.x, -0.1f, p14.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p15 = gridToWorld(46, 35);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p15.x, -0.1f, p15.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
+
+        glm::vec3 p16 = gridToWorld(46, 46);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p16.x, -0.1f, p16.z));
+        RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
     }
 
     {
@@ -740,6 +861,7 @@ void Tema2::MinimapRender() {
     }
 
     RenderRailsMini();
+	DrawTrainMini(trains[0], railsGrid);
 
     glViewport(0, 0, resolution.x, resolution.y);
 }

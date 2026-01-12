@@ -162,6 +162,37 @@ void createCylinder3(glm::vec3 pos,
         }        
     }
 
+Mesh* object3D::RenderCube (const std::string& name,
+    glm::vec3 position)
+{
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, 0.5f);
+
+    std::vector<VertexFormat> vertices = {
+        VertexFormat(corner, WHITE_COLOR),
+		VertexFormat(corner + glm::vec3(1.f, 0.f, 0.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(1.f, 1.f, 0.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(0.f, 1.f, 0.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(0.f, 0.f, -1.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(1.f, 0.f, -1.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(1.f, 1.f, -1.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(0.f, 1.f, -1.f), WHITE_COLOR),
+    };
+
+    std::vector<unsigned int> indices = {
+        0,1,2, 0,2,3,
+        4,6,5, 4,7,6,
+        4,5,1, 4,1,0,
+        3,2,6, 3,6,7,
+        1,5,6, 1,6,2,
+        4,0,3, 4,3,7
+	};
+
+	Mesh* cube = new Mesh(name);
+	cube->InitFromData(vertices, indices);
+
+    return cube;
+}
+
 Mesh* object3D::CreateLocomotive
     (const std::string &name,
     glm::vec3 position) 
