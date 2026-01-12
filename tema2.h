@@ -64,6 +64,13 @@ namespace t2
         void RenderRails();
 		void RenderRailsMini();
 		void DrawTrainMini(const Train& train, const RailGrid& grid);
+        void DrawStations();
+        void DrawStation(glm::vec3 position, Mesh* stationMesh);
+        void DrawStationsMini();
+        void DrawStationMini(glm::vec3 position, Mesh* stationMesh);
+
+        void DrawPads();
+        void DrawPadMini();
 
 		void GameOn(float deltaTime);
 		void MainMenu(float deltaTime);
@@ -118,6 +125,7 @@ namespace t2
 		// gfxc::TextRenderer* textRenderer;
 
         std::vector<glm::vec2> stationPositions;
+        std::vector<glm::vec2> padsPositions;
 
         bool startGame;
         bool goBackMenu;

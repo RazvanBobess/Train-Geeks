@@ -279,7 +279,7 @@ Mesh* object3D::CreatePad(const std::string& name, glm::vec3 position)
     std::vector<unsigned int> indices;
     glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, -0.5f);
 
-    createCylinder3(corner, 0.5f, 1.f, 1.f, DARK_GREEN_COLOR, vertices, indices);
+    createCylinder3(corner, 0.5f, 1.f, 1.f, YELLOW_COLOR, vertices, indices);
     Mesh* pad = new Mesh(name);
     pad->InitFromData(vertices, indices);
 	return pad;
@@ -433,29 +433,24 @@ Mesh* object3D::CreateTerrain
     return terrain;
 }
 
-Mesh* object3D::CreateSphere
-    (const std::string &name,
-    glm::vec3 position) 
+void makeSphere(float radius, 
+    int sectorCount, 
+    int stackCount,
+    glm::vec3 center,
+    glm::vec3 color,
+    std::vector<VertexFormat>& vertices,
+    std::vector<unsigned int>& indices) 
 {
-    std::vector<VertexFormat> vertices;
-    std::vector<unsigned int> indices;
-
-    glm::vec3 corner = position;
-
-    float radius = 1.f;
-    int sectorCount = 20;
-    int stackCount = 20;
-
     for (int i = 0; i <= stackCount; ++i) {
         float stackAngle = M_PI / 2 - i * M_PI / stackCount;
-        float xy = radius * cosf(stackAngle);
-        float z = radius * sinf(stackAngle);
+        float xy = center.x + radius * cosf(stackAngle);
+        float z = center.z + radius * sinf(stackAngle);
 
         for (int j = 0; j <= sectorCount; ++j) {
             float sectorAngle = j * 2 * M_PI / sectorCount;
-            float x = xy * cosf(sectorAngle);
-            float y = xy * sinf(sectorAngle);
-            vertices.push_back(VertexFormat(glm::vec3(x + corner.x, y + corner.y, z + corner.z), glm::vec3(1.f, 1.f, 1.f)));
+            float x = center.x + xy * cosf(sectorAngle);
+            float y = center.y + xy * sinf(sectorAngle);
+            vertices.push_back(VertexFormat(glm::vec3(x, y, z), color));
         }
     }
 
@@ -477,6 +472,18 @@ Mesh* object3D::CreateSphere
             }
         }
     }
+}
+
+Mesh* object3D::CreateSphere
+    (const std::string &name,
+    glm::vec3 position) 
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+
+    glm::vec3 corner = position;
+
+    makeSphere(1.f, 20, 20, corner, WHITE_COLOR, vertices, indices);
 
     Mesh* sphere = new Mesh(name);
 
@@ -520,6 +527,27 @@ Mesh* object3D::CreateStation2
     createCylinder3(corner + glm::vec3(2.4f, 0.f, 0.f), 0.2f, 2.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
     createCylinder3(corner + glm::vec3(0.f, 0.f, -2.4f), 0.2f, 2.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
     createCylinder3(corner + glm::vec3(2.4f, 0.f, -2.4f), 0.2f, 2.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
+
+    Mesh* station = new Mesh(name);
+    station->InitFromData(vertices, indices);
+
+    return station;
+}
+
+Mesh* object3D::CreateStation3
+    (const std::string &name, 
+    glm::vec3 position) {
+
+    glm::vec3 corner = position + glm::vec3(-1.1f, 0.f, 1.1f);
+    glm::vec3 center = position + glm::vec3(0.f, 0.f, 0.f);
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+
+    createCylinder3(center, 1.2f, 2.f, 20, PURPLE_COLOR, vertices, indices);
+    createCylinder3(corner, 0.2f, 3.f, 20, DARK_GRAY_COLOR, vertices, indices);
+    createCylinder3(corner + glm::vec3(2.2f, 0.f, 0.f), 0.2f, 3.f, 20, DARK_GRAY_COLOR, vertices, indices);
+    createCylinder3(corner + glm::vec3(0.f, 0.f, -2.2f), 0.2f, 3.f, 20, DARK_GRAY_COLOR, vertices, indices);
+    createCylinder3(corner + glm::vec3(2.2f, 0.f, -2.2f), 0.2f, 3.f, 20, DARK_GRAY_COLOR, vertices, indices);
 
     Mesh* station = new Mesh(name);
     station->InitFromData(vertices, indices);

@@ -80,6 +80,9 @@ void Tema2::Init() {
         Mesh* station2 = object3D::CreateStation2("station2", glm::vec3(0.f, 0.f, 0.f));
         AddMeshToList(station2);
 
+        Mesh* station3 = object3D::CreateStation3("station3", glm::vec3(0.f, 0.f, 0.f));
+        AddMeshToList(station3);
+
         Mesh* cube = object3D::RenderCube("cube", glm::vec3(0.f, 0.f, 0.f));
         AddMeshToList(cube);
 
@@ -91,6 +94,16 @@ void Tema2::Init() {
 
 		Mesh* mountain = object3D::CreateMountain("mountain", glm::vec3(0.f, 0.f, 0.f));
 		AddMeshToList(mountain);
+    }
+
+    {
+        stationPositions.push_back(glm::vec2(-3.f, -7.4f));
+        stationPositions.push_back(glm::vec2(18.5f, 13.f));
+        stationPositions.push_back(glm::vec2(-16.f, 17.f));
+    }
+
+    {
+        padsPositions.push_back(glm::vec2(0.f, 0.f));
     }
 
     {
@@ -299,30 +312,6 @@ void Tema2::GameOn(float deltaTime) {
     glm::mat4 aux_mat;
 
     {
-        modelMatrix = glm::mat4(1);
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(1.f, 0.2f, 0.457f));
-
-        aux_mat = glm::translate(modelMatrix, glm::vec3(-25.f, 0.f, 54.f));
-        RenderMesh(meshes["terrain"], shaders["VC"], aux_mat);
-
-        aux_mat = glm::translate(modelMatrix, glm::vec3(-25.f, 0.f, -6.f));
-        RenderMesh(meshes["terrain"], shaders["VC"], aux_mat);
-
-        modelMatrix = glm::mat4(1);
-        aux_mat = modelMatrix;
-
-        aux_mat = glm::translate(modelMatrix, glm::vec3(-3.f, 0.8f, -7.4f));
-        RenderMesh(meshes["station1"], shaders["VC"], aux_mat);
-
-        aux_mat = glm::translate(modelMatrix, glm::vec3(7.f, 0.8f, 5.4f));
-        RenderMesh(meshes["station2"], shaders["VC"], aux_mat);
-
-        modelMatrix = glm::mat4(1);
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.f, 1.f, 0.f));
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(4.6f, 0.1f, 50));
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.1f, 0.5f, 0.f));
-        RenderMesh(meshes["water"], shaders["VC"], modelMatrix, mapTextures["water_m"]);
-
         glm::vec3 p1 = gridToWorld(25, 7);
         modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(p1.x, -0.1f, p1.z));
@@ -396,8 +385,19 @@ void Tema2::GameOn(float deltaTime) {
 
     {
         modelMatrix = glm::mat4(1);
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(1.f, 3.f, 4.f));
-        RenderMesh(meshes["sphere"], shaders["VC"], modelMatrix);
+        modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.f, 1.f, 0.f));
+        modelMatrix = glm::scale(modelMatrix, glm::vec3(4.6f, 0.1f, 50));
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(0.1f, 0.5f, 0.f));
+        RenderMesh(meshes["water"], shaders["VC"], modelMatrix, mapTextures["water_m"]);
+
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::scale(modelMatrix, glm::vec3(1.f, 0.2f, 0.457f));
+
+        aux_mat = glm::translate(modelMatrix, glm::vec3(-25.f, 0.f, 54.f));
+        RenderMesh(meshes["terrain"], shaders["VC"], aux_mat);
+
+        aux_mat = glm::translate(modelMatrix, glm::vec3(-25.f, 0.f, -6.f));
+        RenderMesh(meshes["terrain"], shaders["VC"], aux_mat);
 
 		modelMatrix = glm::mat4(1);
 		modelMatrix = glm::translate(modelMatrix, glm::vec3(14.f, 0.8f, -2.f));
@@ -414,8 +414,10 @@ void Tema2::GameOn(float deltaTime) {
 
     UpdateTrain(trains[0], deltaTime, railsGrid);
     DrawTrain(trains[0], railsGrid);
-
+    DrawStations();
     RenderRails();
+
+    DrawPads();
 
     MinimapRender();
 }
@@ -670,6 +672,74 @@ void Tema2::RenderRailsMini() {
     }
 }
 
+void Tema2::DrawStation(glm::vec3 position, Mesh* stationMesh) {
+    glm::mat4 modelMatrix(1.0f);
+    modelMatrix = glm::translate(modelMatrix, position);
+    RenderMesh(stationMesh, shaders["VC"], modelMatrix);
+}
+
+void Tema2::DrawStations() {
+    for (int i = 0; i < stationPositions.size(); i++) {
+        glm::vec3 pos = glm::vec3(stationPositions[i].x, 0.8f, stationPositions[i].y);
+
+        switch (i) {
+            case 0:
+                DrawStation(pos, meshes["station1"]);
+                break;
+            case 1:
+                DrawStation(pos, meshes["station2"]);
+                break;
+            case 2:
+                DrawStation(pos, meshes["station3"]);
+                break;
+        }
+    }
+}
+
+void Tema2::DrawStationMini(glm::vec3 position, Mesh* stationMesh) {
+    glm::mat4 modelMatrix(1.0f);
+    modelMatrix = glm::translate(modelMatrix, position);
+    RenderMeshMini(stationMesh, shaders["VC"], modelMatrix);
+}
+
+void Tema2::DrawStationsMini() {
+    for (int i = 0; i < stationPositions.size(); i++) {
+        glm::vec3 pos = glm::vec3(stationPositions[i].x, 0.8f, stationPositions[i].y);
+
+        switch (i) {
+            case 0:
+                DrawStationMini(pos, meshes["station1"]);
+                break;
+            case 1:
+                DrawStationMini(pos, meshes["station2"]);
+                break;
+            case 2:
+                DrawStationMini(pos, meshes["station3"]);
+                break;
+        }
+    }
+}
+
+void Tema2::DrawPads() {
+    for (int i = 0; i < padsPositions.size(); i++) {
+        glm::vec3 pos = glm::vec3(padsPositions[i].x, 2.f, padsPositions[i].y);
+
+        glm::mat4 modelMatrix(1.0f);
+        modelMatrix = glm::translate(modelMatrix, pos);
+        RenderMesh(meshes["pad"], shaders["VC"], modelMatrix);
+    }
+}
+
+void Tema2::DrawPadMini() {
+    for (int i = 0; i < padsPositions.size(); i++) {
+        glm::vec3 pos = glm::vec3(padsPositions[i].x, 2.f, padsPositions[i].y);
+
+        glm::mat4 modelMatrix(1.0f);
+        modelMatrix = glm::translate(modelMatrix, pos);
+        RenderMeshMini(meshes["pad"], shaders["VC"], modelMatrix);
+    }
+}
+
 void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture) {
     if (!mesh || !shader || !shader->GetProgramID())
         return;
@@ -757,6 +827,15 @@ void Tema2::RenderMeshMini(Mesh* mesh, Shader* shader, const glm::mat4& modelMat
         GLint isWater = glGetUniformLocation(shader->program, "isWater");
         glUniform1i(isWater, 0);
     }
+
+    if (mesh == meshes["mountain"]) {
+        GLint isMountain = glGetUniformLocation(shader->program, "isMountain");
+        glUniform1i(isMountain, 1);
+    }
+    else {
+        GLint isMountain = glGetUniformLocation(shader->program, "isMountain");
+        glUniform1i(isMountain, 0);
+	}
 
     GLint useTexture = glGetUniformLocation(shader->program, "useTexture");
 
@@ -868,29 +947,21 @@ void Tema2::MinimapRender() {
 
     {
         modelMatrix = glm::mat4(1);
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f));
-
-        aux_mat = glm::translate(modelMatrix, glm::vec3(-15.f, 4.f, -37.f));
-        RenderMeshMini(meshes["station1"], shaders["VC"], aux_mat);
-
-        aux_mat = glm::translate(modelMatrix, glm::vec3(35.f, 4.f, 27.f));
-        RenderMeshMini(meshes["station2"], shaders["VC"], aux_mat);
-
-        modelMatrix = glm::mat4(1);
         modelMatrix = glm::rotate(modelMatrix, glm::radians(90.0f), glm::vec3(0.f, 1.f, 0.f));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(4.6f, 0.1f, 50));
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0.1f, 0.5f, 0.0f));
         RenderMeshMini(meshes["water"], shaders["VC"], modelMatrix, mapTextures["water_m"]);
-    }
 
-    {
         modelMatrix = glm::mat4(1);
-        modelMatrix = glm::translate(modelMatrix, glm::vec3(1.f, 3.f, 4.f));
-        RenderMeshMini(meshes["sphere"], shaders["VC"], modelMatrix);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(14.f, 0.8f, -2.f));
+		RenderMeshMini(meshes["mountain"], shaders["VC"], modelMatrix);
     }
 
     RenderRailsMini();
 	DrawTrainMini(trains[0], railsGrid);
+    DrawStationsMini();
+
+    DrawPadMini();
 
     glViewport(0, 0, resolution.x, resolution.y);
 }
