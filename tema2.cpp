@@ -275,6 +275,17 @@ void Tema2::Init() {
 		railsGrid.buildDefaultNeighbors();
     }
 
+    {
+        glm::ivec2 windowResolution = window->GetResolution();
+        textRenderer = new gfxc::TextRenderer(window->props.selfDir, windowResolution.x, windowResolution.y);
+        textRenderer->Load("../assets/fonts/Hack-Bold.ttf", 20);
+    }
+
+    {
+        currentOrders.resize(NUMBER_OF_ORDERS, 0);
+        collectedOrders.resize(NUMBER_OF_ORDERS, 0);
+    }
+
     direction = 0;
 	trainWaiting = true;
 
@@ -425,22 +436,117 @@ void Tema2::GameOn(float deltaTime) {
         RenderMesh(meshes["sphere"], shaders["VC"], modelMatrix);
     }
 
+    {
+        glm::ivec2 windowRes = window->GetResolution();
+        std::string timeMessage = "Time: " + to_string(int(gameTime)) + " seconds";
+        textRenderer->RenderText(timeMessage, 10, windowRes.y - 20, 0.7f, glm::vec3(1, 1, 1));
+
+        glm::string orderMess = "Current Orders:";
+        for (size_t i = 0; i < currentOrders.size(); i++) {
+            orderMess += std::to_string(currentOrders[i]) + ". ";
+        }
+        textRenderer->RenderText(orderMess, 10, windowRes.y - 50, 0.7f, glm::vec3(1, 1, 1));
+
+        glm::string collectedMess = "Collected Orders:";
+        for (size_t i = 0; i < collectedOrders.size(); i++) {
+            collectedMess += std::to_string(collectedOrders[i]) + ". ";
+        }
+        textRenderer->RenderText(collectedMess, 10, windowRes.y - 80, 0.7f, glm::vec3(1, 1, 1));
+
+        glm::string devOrd = "Delivered Orders:" + std::to_string(devOrders);
+        textRenderer->RenderText(devOrd, 10, windowRes.y - 110, 0.7f, glm::vec3(1, 1, 1));
+    }
+
     UpdateTrain(trains[0], deltaTime, railsGrid);
     DrawTrain(trains[0], railsGrid);
     DrawStations();
     RenderRails();
 
     DrawPads();
+    RenderOrders();
+    UpdateGame(deltaTime);
 
     MinimapRender();
 }
 
 void Tema2::UpdateGame(float deltaTime) {
-    // Code for updating game state
+
+    int padIndex = -1;
+    for (size_t i = 0; i < padsPositions.size(); i++) {
+        glm::vec2 padPos = padsPositions[i];
+        glm::vec3 trainPos = getTrainPos(trains[0], railsGrid);
+
+        if(isInStationProximity(trainPos, padPos)) {
+            padIndex = i;
+            break;
+        }
+    }
+
+    if (padIndex == -1)
+        return;
+    
+    // main station
+    if (padIndex == 0) {
+        devOrders += totalOrders;
+        totalOrders = 0;
+
+        for (int i = 0; i < collectedOrders.size(); i++) {
+            collectedOrders[i] = 0;
+        }
+        std::cout << "Delivered all orders! Total delivered: " << devOrders << "\n";
+    } else {
+        // other stations
+        int orderType = padIndex - 1;
+        currentOrders[orderType] += 1;
+        totalOrders += 1;
+
+        std::cout << "Picked up order of type " << orderType + 1 << ". Total orders: " << totalOrders << "\n";
+    }
 }
 
 void Tema2::MainMenu(float deltaTime) {
     // Code for main menu rendering
+}
+
+void Tema2::RenderOrders() {
+    std::vector<unsigned int> availableOrders;
+    for (int i = 0; i < currentOrders.size(); i++) {
+        for (int j = 0; j < currentOrders[i]; j++) {
+            availableOrders.push_back(i + 1);
+        }
+    }
+
+    if (availableOrders.empty()) {
+        return;
+    }
+
+    float offset = 2.0f;
+    float totalWidth = (availableOrders.size() - 1) * offset;
+    float startX = -totalWidth / 2.0f;
+
+    glm::mat4 model;
+
+    for (int k = 0; k < availableOrders.size(); k++) {
+        unsigned int orderType = availableOrders[k];
+
+        float xPos = startX + k * offset;
+        glm::vec3 orderPos = glm::vec3(xPos, 2.0f, -5.0f);
+        
+        model = glm::mat4(1);
+        model = glm::translate(model, orderPos);
+
+        switch (orderType) {
+            case 0:
+                RenderMesh(meshes["log"], shaders["VC"], model);
+                break;
+            case 1:
+                RenderMesh(meshes["barrel"], shaders["VC"], model);
+                break;
+            case 2:
+                RenderMesh(meshes["powder"], shaders["VC"], model);
+                break;
+        }
+    }
 }
 
 void Tema2::FrameEnd() {
@@ -1125,8 +1231,6 @@ void Tema2::OnKeyPress(int key, int mods) {
     if (key == GLFW_KEY_D) direction = 1;
     if (key == GLFW_KEY_S) direction = 2;
     if (key == GLFW_KEY_A) direction = 3;
-
-	printf("Key pressed: %d\n", direction);
 
     if (direction != -1) {
         Direction dir = Direction::NORTH;

@@ -13,6 +13,7 @@
 #include "lab_m1/tema2/rails.h"
 
 #define TRAIN_PROXIMITY 0.5f
+#define NUMBER_OF_ORDERS 3
 
 namespace t2
 {
@@ -66,6 +67,7 @@ namespace t2
         void DrawCarriages();
         void RenderRails();
 		void RenderRailsMini();
+        void RenderOrders();
 		void DrawTrainMini(const Train& train, const RailGrid& grid);
         void DrawStations();
         void DrawStation(glm::vec3 position, Mesh* stationMesh);
@@ -146,8 +148,8 @@ namespace t2
 
         float ordersCooldown;
 
-        unsigned int totalOrders;
-		unsigned int devOrders;
+        unsigned int totalOrders = 0;
+		unsigned int devOrders = 0;
         unsigned int ordersType = 3;
 		std::vector<unsigned int> currentOrders;
 		std::vector<unsigned int> collectedOrders;
