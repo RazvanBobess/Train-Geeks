@@ -105,6 +105,8 @@ void Tema2::Init() {
 
 		railsGrid.setStraightRail(6, 27, Direction::NORTH, RailType::BRIDGE_RAIL);
 
+        railsGrid.connectCells(6, 28, 6, 36, RailType::RAIL);
+
         Cell& sw3 = railsGrid.getCell(6, 27);
         sw3.connections.fill(false);
         sw3.neighbors.fill(nullptr);
@@ -151,8 +153,8 @@ void Tema2::Init() {
         railsGrid.setCellNeighbor(railsGrid.getCell(24, 35), Direction::NORTH, sw5);
         railsGrid.setCellNeighbor(railsGrid.getCell(26, 35), Direction::SOUTH, sw5);
 
-		railsGrid.connectCells(26, 35, 38, 35, RailType::RAIL);
-		railsGrid.connectCells(26, 46, 38, 46, RailType::RAIL);
+		railsGrid.connectCells(26, 35, 39, 35, RailType::RAIL);
+		railsGrid.connectCells(26, 46, 39, 46, RailType::RAIL);
 
         railsGrid.connectCells(26, 7, 39, 7, RailType::RAIL);
 		railsGrid.connectCells(38, 8, 38, 19, RailType::RAIL);
@@ -197,8 +199,9 @@ void Tema2::Init() {
         railsGrid.setCellNeighbor(sw12, Direction::NORTH, railsGrid.getCell(38, 27), true);
         railsGrid.setCellNeighbor(sw12, Direction::SOUTH, railsGrid.getCell(38, 27), true);
 
-        railsGrid.connectCells(39, 35, 46, 35, RailType::RAIL);
-		railsGrid.connectCells(38, 36, 38, 46, RailType::RAIL);
+        railsGrid.connectCells(39, 35, 47, 35, RailType::RAIL);
+		railsGrid.connectCells(38, 36, 38, 47, RailType::RAIL);
+        railsGrid.connectCells(39, 46, 47, 46, RailType::RAIL);
 
         Cell& sw13 = railsGrid.getCell(38, 35);
         railsGrid.connectSwich(sw13, {
@@ -208,8 +211,25 @@ void Tema2::Init() {
            {Direction::WEST,&railsGrid.getCell(38, 35)}
             });
 
-        //railsGrid.connectCells(39, 46, 46, 46, RailType::RAIL);
-		//railsGrid.connectCells(46, 36, 46, 46, RailType::RAIL);
+        Cell& sw14 = railsGrid.getCell(38, 46);
+        railsGrid.connectSwich(sw14, {
+           {Direction::EAST, &railsGrid.getCell(38, 46)},
+           {Direction::NORTH, &railsGrid.getCell(38, 46)},
+           {Direction::WEST,&railsGrid.getCell(38, 46)}
+            });
+
+		railsGrid.connectCells(46, 36, 46, 46, RailType::RAIL);
+        Cell& sw15 = railsGrid.getCell(46, 35);
+        railsGrid.connectSwich(sw15, {
+           {Direction::SOUTH, &railsGrid.getCell(46, 35)},
+           {Direction::WEST,&railsGrid.getCell(46, 35)}
+            });
+
+        Cell& sw16 = railsGrid.getCell(46, 46);
+        railsGrid.connectSwich(sw16, {
+           {Direction::NORTH, &railsGrid.getCell(46, 46)},
+           {Direction::WEST,&railsGrid.getCell(46, 46)}
+            });
 
 		railsGrid.buildDefaultNeighbors();
     }
@@ -223,7 +243,7 @@ void Tema2::Init() {
 
         train.type = TrainType::TRAIN;
         train.trainDir = Direction::NORTH;
-        train.gridPos = glm::ivec2(38, 35);
+        train.gridPos = glm::ivec2(25, 20);
 		train.nextDir = Direction::NORTH;
 		train.request = false;
         train.progress = 0.f;
@@ -445,10 +465,6 @@ void Tema2::UpdateTrain(Train& train, float dt, RailGrid& grid) {
                 return;
             }
         }
-
-        printf("Train at (%d, %d), dir %d\n", train.gridPos.x, train.gridPos.y, directionToInt(train.trainDir));
-        printf("Connections: N:%d E:%d S:%d W:%d\n", curCell.connections[0], curCell.connections[1], curCell.connections[2], curCell.connections[3]);
-        printf("Is switch: %d\n", curCell.isSwitch);
 
         if (!grid.getNextCell(train.gridPos.x, train.gridPos.y, train.trainDir, nx, ny)) {
 
