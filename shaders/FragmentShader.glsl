@@ -10,30 +10,26 @@ uniform sampler2D texture1;
 uniform float Time; 
 uniform int useTexture; 
 uniform int isWater;
-uniform int isTunnel;
+uniform int isMountain;
 
 void main() {
     if (useTexture == 0) {
+        vec3 pos = frag_position;
+
+        if (isMountain == 1) {
+            if (pos.x >= 12.35 && pos.x <= 13.65 &&
+                pos.z >= -18.0 && pos.z <= 9.0 &&
+                pos.y >= 0.5 && pos.y <= 3.2)
+                {
+                    discard;
+                }
+            }
+
         out_color = vec4(frag_color, 1.0);
         return;
     }
 
     vec2 uv = frag_texcoord;
-    vec3 pos = frag_position;
-
-    if (isTunnel == 1)
-    {
-        if (pos.x >= 0.0 && pos.x <= 14.0 &&
-            pos.z >= -20.0 && pos.z <= 10.0 &&
-            pos.y >= 0.5 && pos.y <= 2.0)
-        {
-            discard;
-        }
-
-        out_color = texture(texture1, uv);
-        return;
-    }
-
 
     if (isWater == 0) {
         out_color = texture(texture1, uv);

@@ -172,7 +172,7 @@ void Tema2::Init() {
 		railsGrid.connectCells(26, 46, 39, 46, RailType::RAIL);
 
         railsGrid.connectCells(26, 7, 39, 7, RailType::RAIL);
-		railsGrid.connectCells(38, 8, 38, 19, RailType::RAIL);
+		railsGrid.connectCells(38, 8, 38, 19, RailType::TUNNEL_RAIL);
         railsGrid.connectCells(39, 7, 46, 7, RailType::RAIL);
 
         Cell& sw8 = railsGrid.getCell(38, 7);
@@ -689,7 +689,7 @@ void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
     int loc_projection_matrix = glGetUniformLocation(shader->program, "Projection");
     glUniformMatrix4fv(loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
-    if (meshes["water"] == mesh) {
+    if (mesh == meshes["water"]) {
         GLint isWater = glGetUniformLocation(shader->program, "isWater");
         glUniform1i(isWater, 1);
 
@@ -703,13 +703,13 @@ void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
         glUniform1i(isWater, 0);
     }
 
-    if (meshes["tunnelRail"] == mesh) {
-        GLint isTunnel = glGetUniformLocation(shader->program, "isTunnel");
-        glUniform1i(isTunnel, 1);
+    if (mesh == meshes["mountain"]) {
+        GLint isMountain = glGetUniformLocation(shader->program, "isMountain");
+        glUniform1i(isMountain, 1);
     }
     else {
-        GLint isTunnel = glGetUniformLocation(shader->program, "isTunnel");
-        glUniform1i(isTunnel, 0);
+        GLint isMountain = glGetUniformLocation(shader->program, "isMountain");
+        glUniform1i(isMountain, 0);
 	}
 
     GLint useTexture = glGetUniformLocation(shader->program, "useTexture");

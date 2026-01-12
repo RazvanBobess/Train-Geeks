@@ -14,8 +14,8 @@ out vec3 frag_color;
 out vec3 frag_position;
 
 void main() {
-    vec4 world_position = Model * vec4(v_position, 1.0);
-    frag_position = world_position.xyz;
+    vec3 world_position = (Model * vec4(v_position, 1)).xyz;
+    frag_position = world_position;
 
     frag_texcoord = v_texture_coord;
     frag_color = v_color;
