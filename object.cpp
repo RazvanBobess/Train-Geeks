@@ -190,6 +190,33 @@ void createRoof(glm::vec3 pos,
 		}
     }
 
+void createEgypt(glm::vec3 pos,
+    float w, float h, float d,
+    glm::vec3 color,
+    std::vector<VertexFormat>& vertices,
+    std::vector<unsigned int>& indices) {
+
+        unsigned int start_index = vertices.size();
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y, pos.z), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y, pos.z), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w * 0.5f, pos.y + h, pos.z - d * 0.5f), color));
+
+        unsigned int egypt_indices[] = {
+            0,1,4,
+            1,2,4,
+            2,3,4,
+            3,0,4,
+            3,2,1,
+            3,1,0
+		};
+
+        for (unsigned int i : egypt_indices) {
+            indices.push_back(start_index + i);
+		}
+}
+
 Mesh* object3D::RenderCube (const std::string& name,
     glm::vec3 position)
 {
@@ -232,6 +259,18 @@ Mesh* object3D::CreateLog(const std::string& name, glm::vec3 position)
 	log->InitFromData(vertices, indices);
 
 	return log;
+}
+
+Mesh* object3D::CreateMountain(const std::string& name, glm::vec3 position)
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+    glm::vec3 corner = position + glm::vec3(-4.f, 0.f, -5.f);
+
+	createEgypt(corner, 8.f, 10.f, 10.f, BROWN_COLOR, vertices, indices);
+    Mesh* mountain = new Mesh(name);
+    mountain->InitFromData(vertices, indices);
+    return mountain;
 }
 
 Mesh* object3D::CreatePad(const std::string& name, glm::vec3 position)

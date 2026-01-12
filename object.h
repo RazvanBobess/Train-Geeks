@@ -42,4 +42,6 @@ namespace object3D
 	Mesh* CreateLog(const std::string& name, glm::vec3 position);
 
 	Mesh* CreatePad(const std::string& name, glm::vec3 position);
+
+	Mesh* CreateMountain(const std::string& name, glm::vec3 position);
 }

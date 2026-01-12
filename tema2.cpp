@@ -88,6 +88,9 @@ void Tema2::Init() {
 
 		Mesh* pad = object3D::CreatePad("pad", glm::vec3(0.f, 0.f, 0.f));
 		AddMeshToList(pad);
+
+		Mesh* mountain = object3D::CreateMountain("mountain", glm::vec3(0.f, 0.f, 0.f));
+		AddMeshToList(mountain);
     }
 
     {
@@ -397,6 +400,10 @@ void Tema2::GameOn(float deltaTime) {
         modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(1.f, 3.f, 4.f));
         RenderMesh(meshes["sphere"], shaders["VC"], modelMatrix);
+
+		modelMatrix = glm::mat4(1);
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(14.f, 0.8f, -2.f));
+		RenderMesh(meshes["mountain"], shaders["VC"], modelMatrix);
     }
 
     if (renderCameraTarget)
@@ -695,6 +702,15 @@ void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
         GLint isWater = glGetUniformLocation(shader->program, "isWater");
         glUniform1i(isWater, 0);
     }
+
+    if (meshes["tunnelRail"] == mesh) {
+        GLint isTunnel = glGetUniformLocation(shader->program, "isTunnel");
+        glUniform1i(isTunnel, 1);
+    }
+    else {
+        GLint isTunnel = glGetUniformLocation(shader->program, "isTunnel");
+        glUniform1i(isTunnel, 0);
+	}
 
     GLint useTexture = glGetUniformLocation(shader->program, "useTexture");
 
