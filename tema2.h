@@ -65,6 +65,9 @@ namespace t2
 		void RenderRailsMini();
 		void DrawTrainMini(const Train& train, const RailGrid& grid);
 
+		void GameOn(float deltaTime);
+		void MainMenu(float deltaTime);
+
         void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = NULL);
         void RenderMeshMini(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = NULL);
         void MinimapRender();

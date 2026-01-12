@@ -65,6 +65,9 @@ void Tema2::Init() {
         Mesh* rail = object3D::CreateRail("rail", glm::vec3(0.f, 0.f, 0.f));
         AddMeshToList(rail);
 
+		Mesh* tunnelRail = object3D::CreateTunnelRail("tunnelRail", glm::vec3(0.f, 0.f, 0.f));
+		AddMeshToList(tunnelRail);
+
         Mesh* carriage1 = object3D::CreateCarriage("carriage1", glm::vec3(0.f, 0.f, 0.f));
         AddMeshToList(carriage1);
 
@@ -285,12 +288,12 @@ void Tema2::FrameStart() {
 }
 
 void Tema2::Update(float deltaTimeSeconds) {
-    // Per-frame update code here
+	GameOn(deltaTimeSeconds);
+}
 
+void Tema2::GameOn(float deltaTime) {
     glm::mat4 modelMatrix;
     glm::mat4 aux_mat;
-
-    // Terrain
 
     {
         modelMatrix = glm::mat4(1);
@@ -319,10 +322,10 @@ void Tema2::Update(float deltaTimeSeconds) {
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0.1f, 0.5f, 0.f));
         RenderMesh(meshes["water"], shaders["VC"], modelMatrix, mapTextures["water_m"]);
 
-		glm::vec3 p1 = gridToWorld(25, 7);
-		modelMatrix = glm::mat4(1);
-		modelMatrix = glm::translate(modelMatrix, glm::vec3(p1.x, -0.1f, p1.z));
-		RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
+        glm::vec3 p1 = gridToWorld(25, 7);
+        modelMatrix = glm::mat4(1);
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(p1.x, -0.1f, p1.z));
+        RenderMesh(meshes["cube"], shaders["VC"], modelMatrix);
 
         glm::vec3 p2 = gridToWorld(6, 7);
         modelMatrix = glm::mat4(1);
@@ -404,12 +407,16 @@ void Tema2::Update(float deltaTimeSeconds) {
         RenderMesh(meshes["sphere"], shaders["VC"], modelMatrix);
     }
 
-    UpdateTrain(trains[0], deltaTimeSeconds, railsGrid);
+    UpdateTrain(trains[0], deltaTime, railsGrid);
     DrawTrain(trains[0], railsGrid);
 
     RenderRails();
 
     MinimapRender();
+}
+
+void Tema2::MainMenu(float deltaTime) {
+    // Code for main menu rendering
 }
 
 void Tema2::FrameEnd() {
@@ -616,6 +623,7 @@ void Tema2::RenderRails() {
                     RenderMesh(meshes["bridgeRail"], shaders["VC"], modelMatrix);
                     break;
                 case RailType::TUNNEL_RAIL:
+					RenderMesh(meshes["tunnelRail"], shaders["VC"], modelMatrix);
                     break;
                 default:
                     break;
@@ -647,6 +655,7 @@ void Tema2::RenderRailsMini() {
                 RenderMeshMini(meshes["bridgeRail"], shaders["VC"], modelMatrix);
                 break;
             case RailType::TUNNEL_RAIL:
+				RenderMeshMini(meshes["tunnelRail"], shaders["VC"], modelMatrix);
                 break;
             default:
                 break;

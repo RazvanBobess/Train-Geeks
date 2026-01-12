@@ -27,6 +27,8 @@ namespace object3D
 
     Mesh* CreateBridgeRail(const std::string &name, glm::vec3 position);
 
+	Mesh* CreateTunnelRail(const std::string& name, glm::vec3 position);
+
     Mesh* CreateTerrain(const std::string &name, glm::vec3 position);
 
     Mesh* CreateSphere(const std::string &name, glm::vec3 position);

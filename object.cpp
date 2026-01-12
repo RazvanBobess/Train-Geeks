@@ -162,6 +162,34 @@ void createCylinder3(glm::vec3 pos,
         }        
     }
 
+void createRoof(glm::vec3 pos,
+    float w, float h, float d,
+    glm::vec3 color,
+    std::vector<VertexFormat>& vertices,
+    std::vector<unsigned int>& indices) {
+        unsigned int start_index = vertices.size();
+
+		vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y, pos.z), color));
+		vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y, pos.z), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y + h, pos.z), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y + h, pos.z), color));
+
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y + h, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y + h, pos.z - d), color));
+
+        unsigned int roof_indices[] = {
+            4,0,3, 3,7,4,
+            3,2,6, 3,6,7,
+			1,5,6, 1,6,2
+		};
+
+        for (unsigned int i : roof_indices) {
+            indices.push_back(start_index + i);
+		}
+    }
+
 Mesh* object3D::RenderCube (const std::string& name,
     glm::vec3 position)
 {
@@ -306,6 +334,24 @@ Mesh* object3D::CreateRail
     rail->InitFromData(vertices, indices);
 
     return rail;
+}
+
+Mesh* object3D::CreateTunnelRail(const std::string& name, glm::vec3 position)
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, 0.5f);
+    createCube(corner, 0.2f, 0.04f, 1.f, GRAY_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(0.8f, 0.f, 0.f), 0.2f, 0.04f, 1.f, GRAY_COLOR, vertices, indices);
+
+    glm::vec3 c1 = corner + glm::vec3(-0.1f, 0.f, 0.f);
+	createRoof(c1, 1.2f, 2.4f, 1.f, DARK_GRAY_COLOR, vertices, indices);
+
+	Mesh* rail = new Mesh(name);
+	rail->InitFromData(vertices, indices);
+
+	return rail;
 }
 
 Mesh* object3D::CreateBridgeRail
