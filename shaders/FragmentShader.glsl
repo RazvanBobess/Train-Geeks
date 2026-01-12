@@ -13,10 +13,6 @@ uniform int useTexture;
 uniform int isWater;
 uniform int isMountain;
 
-uniform float snowHeight;
-uniform float snowFade;
-uniform float snowSlopeLimit;
-
 float hash(vec2 p) {
     return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
 }

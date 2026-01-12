@@ -706,15 +706,6 @@ void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix,
     if (mesh == meshes["mountain"]) {
         GLint isMountain = glGetUniformLocation(shader->program, "isMountain");
         glUniform1i(isMountain, 1);
-
-		GLint snowHeight = glGetUniformLocation(shader->program, "snowHeight");
-		glUniform1f(snowHeight, 6.f);
-
-		GLint snowFade = glGetUniformLocation(shader->program, "snowFade");
-		glUniform1f(snowFade, 1.5f);
-
-		GLint snowSlopeLimit = glGetUniformLocation(shader->program, "snowSlopeLimit");
-		glUniform1f(snowSlopeLimit, 0.7f);
     }
     else {
         GLint isMountain = glGetUniformLocation(shader->program, "isMountain");

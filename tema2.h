@@ -115,6 +115,22 @@ namespace t2
         glm::mat4 projectionMatrix;
         bool renderCameraTarget;
 
+		gfxc::TextRenderer* textRenderer;
+
+        bool startGame;
+        bool goBackMenu;
+        float wantedSpeed;
+        float maxSpeed = 7.f;
+        float minSpeed = 2.f;
+
+		int difficultyLevel;
+
+        unsigned int totalOrders;
+		unsigned int devOrders;
+        unsigned int ordersType = 3;
+		std::vector<unsigned int> currentOrders;
+		std::vector<unsigned int> collectedOrders;
+
         std::unordered_map<std::string, Texture2D*> mapTextures;
     };
 }
