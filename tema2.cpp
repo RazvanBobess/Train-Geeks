@@ -309,14 +309,12 @@ void Tema2::GameOn(float deltaTime) {
         RenderMesh(meshes["terrain"], shaders["VC"], aux_mat);
 
         modelMatrix = glm::mat4(1);
-        modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f));
-
         aux_mat = modelMatrix;
 
-        aux_mat = glm::translate(modelMatrix, glm::vec3(-15.f, 4.f, -37.f));
+        aux_mat = glm::translate(modelMatrix, glm::vec3(-3.f, 0.8f, -7.4f));
         RenderMesh(meshes["station1"], shaders["VC"], aux_mat);
 
-        aux_mat = glm::translate(modelMatrix, glm::vec3(35.f, 4.f, 27.f));
+        aux_mat = glm::translate(modelMatrix, glm::vec3(7.f, 0.8f, 5.4f));
         RenderMesh(meshes["station2"], shaders["VC"], aux_mat);
 
         modelMatrix = glm::mat4(1);

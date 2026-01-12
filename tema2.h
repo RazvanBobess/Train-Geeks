@@ -117,6 +117,8 @@ namespace t2
 
 		// gfxc::TextRenderer* textRenderer;
 
+        std::vector<glm::vec2> stationPositions;
+
         bool startGame;
         bool goBackMenu;
         float wantedSpeed;

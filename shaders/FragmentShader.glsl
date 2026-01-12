@@ -28,12 +28,13 @@ void main() {
                 {
                     discard;
                 }
-            }
+
             if (pos.y >= 6.0) {
                 out_color = vec4(1.0, 1.0, 1.0, 1.0);
 
                 return;
             }
+        }
 
         out_color = vec4(frag_color, 1.0);
         return;

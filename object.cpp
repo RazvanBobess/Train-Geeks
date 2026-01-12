@@ -489,16 +489,16 @@ Mesh* object3D::CreateStation1
     (const std::string &name,
     glm::vec3 position)
 {
-    glm::vec3 corner = position + glm::vec3(-7.5f, 0.f, 7.5f);
+    glm::vec3 corner = position + glm::vec3(-1.5f, 0.f, 1.5f);
 
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    createCube(corner, 15.f, 10.f, 15.f, glm::vec3(0.5f, 0.5f, 0.5f), vertices, indices);
-    createCube(corner + glm::vec3(-1.f, 0.f, 1.f), 2.f, 12.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
-    createCube(corner + glm::vec3(14.f, 0.f, 1.f), 2.f, 12.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
-    createCube(corner + glm::vec3(-1.f, 0.f, -14.f), 2.f, 12.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
-    createCube(corner + glm::vec3(14.f, 0.f, -14.f), 2.f, 12.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
+    createCube(corner, 3.f, 2.f, 3.f, glm::vec3(0.5f, 0.5f, 0.5f), vertices, indices);
+    createCube(corner + glm::vec3(-0.2f, 0.f, 0.2f), 0.4f, 3.f, 0.4f, DARK_GRAY_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(3.f, 0.f, 0.2f), 0.4f, 3.f, 0.4f, DARK_GRAY_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(-0.2f, 0.f, -3.f), 0.4f, 3.f, 0.4f, DARK_GRAY_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(3.f, 0.f, -3.f), 0.4f, 3.f, 0.4f, DARK_GRAY_COLOR, vertices, indices);
 
     Mesh* station = new Mesh(name);
     station->InitFromData(vertices, indices);
@@ -510,16 +510,16 @@ Mesh* object3D::CreateStation2
     (const std::string &name,
     glm::vec3 position)
 {
-    glm::vec3 corner = position + glm::vec3(-6.f, 0.f, -6.f);
+    glm::vec3 corner = position + glm::vec3(-1.2f, 0.f, 1.2f);
 
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    createCube(corner, 12.f, 8.f, 12.f, glm::vec3(0.8f, 0.5f, 0.2f), vertices, indices);
-    createCylinder3(corner, 1.f, 10.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
-    createCylinder3(corner + glm::vec3(12.f, 0.f, 0.f), 1.f, 10.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
-    createCylinder3(corner + glm::vec3(0.f, 0.f, -12.f), 1.f, 10.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
-    createCylinder3(corner + glm::vec3(12.f, 0.f, -12.f), 1.f, 10.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
+    createCube(corner, 2.4f, 1.3f, 2.4f, glm::vec3(0.8f, 0.5f, 0.2f), vertices, indices);
+    createCylinder3(corner, 0.2f, 2.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
+    createCylinder3(corner + glm::vec3(2.4f, 0.f, 0.f), 0.2f, 2.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
+    createCylinder3(corner + glm::vec3(0.f, 0.f, -2.4f), 0.2f, 2.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
+    createCylinder3(corner + glm::vec3(2.4f, 0.f, -2.4f), 0.2f, 2.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
 
     Mesh* station = new Mesh(name);
     station->InitFromData(vertices, indices);
