@@ -83,6 +83,9 @@ void Tema2::Init() {
         Mesh* station3 = object3D::CreateStation3("station3", glm::vec3(0.f, 0.f, 0.f));
         AddMeshToList(station3);
 
+        Mesh* station4 = object3D::CreateStation4("station4", glm::vec3(0.f, 0.f, 0.f));
+        AddMeshToList(station4);
+
         Mesh* cube = object3D::RenderCube("cube", glm::vec3(0.f, 0.f, 0.f));
         AddMeshToList(cube);
 
@@ -100,6 +103,7 @@ void Tema2::Init() {
         stationPositions.push_back(glm::vec2(-3.f, -7.4f));
         stationPositions.push_back(glm::vec2(18.5f, 13.f));
         stationPositions.push_back(glm::vec2(-16.f, 17.f));
+        stationPositions.push_back(glm::vec2(-16.f, -14.f));
     }
 
     {
@@ -694,6 +698,9 @@ void Tema2::DrawStations() {
             case 2:
                 DrawStation(pos, meshes["station3"]);
                 break;
+            case 3:
+                DrawStation(pos, meshes["station4"]);
+                break;
         }
     }
 }
@@ -717,6 +724,9 @@ void Tema2::DrawStationsMini() {
                 break;
             case 2:
                 DrawStationMini(pos, meshes["station3"]);
+                break;
+            case 3:
+                DrawStationMini(pos, meshes["station4"]);
                 break;
         }
     }

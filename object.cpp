@@ -554,3 +554,24 @@ Mesh* object3D::CreateStation3
 
     return station;
 }
+
+Mesh* object3D::CreateStation4
+    (const std::string &name, 
+    glm::vec3 position) {
+
+    glm::vec3 corner = position + glm::vec3(-1.5f, 0.f, 1.5f);
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+
+    createEgypt(corner, 3.f, 3.f, 3.f, ORANGE_COLOR, vertices, indices);
+    createCube(corner, 3.f, 0.4f, 3.f, WHITE_COLOR, vertices, indices);
+    createCube(corner, 0.4f, 2.f, 0.4f, WHITE_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(2.6f, 0.f, 0.f), 0.4f, 2.f, 0.4f, WHITE_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(0.f, 0.f, -2.6f), 0.4f, 2.f, 0.4f, WHITE_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(2.6f, 0.f, -2.6f), 0.4f, 2.f, 0.4f, WHITE_COLOR, vertices, indices);
+
+    Mesh* station = new Mesh(name);
+    station->InitFromData(vertices, indices);
+
+    return station;
+}
