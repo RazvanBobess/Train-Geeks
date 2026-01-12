@@ -15,6 +15,10 @@
 #define TRAIN_PROXIMITY 0.5f
 #define NUMBER_OF_ORDERS 3
 
+#define INITIAL_GAME_TIME 180.f
+#define MIN_GAME_TIME 30.f
+#define MAX_GAME_TIME 360.f
+
 namespace t2
 {
     class Tema2 : public gfxc::SimpleScene
@@ -145,6 +149,7 @@ namespace t2
 
         float gameTime;
         float timeElapsed;
+        float lastPadCheck;
 
         float ordersCooldown;
 

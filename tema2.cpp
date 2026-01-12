@@ -290,6 +290,12 @@ void Tema2::Init() {
 	trainWaiting = true;
 
     {
+        gameTime = INITIAL_GAME_TIME;
+        ordersCooldown = 5.f;
+        timeElapsed = INITIAL_GAME_TIME;
+    }
+
+    {
         Train train;
         Train carriage;
 
@@ -328,7 +334,16 @@ void Tema2::FrameStart() {
 }
 
 void Tema2::Update(float deltaTimeSeconds) {
-	GameOn(deltaTimeSeconds);
+    timeElapsed -= deltaTimeSeconds;
+    bool gameDone = (gameTime <= 0.f);
+
+    if (gameDone) {
+        // Game over logic
+        return;
+    } else {
+        GameOn(deltaTimeSeconds);
+    }
+
 }
 
 void Tema2::GameOn(float deltaTime) {
@@ -467,9 +482,26 @@ void Tema2::GameOn(float deltaTime) {
     UpdateGame(deltaTime);
 
     MinimapRender();
+
+    double currTime = glfwGetTime();
+
+    if (currTime - ordersCooldown >= 5.0) {
+        totalOrders += 1;
+
+        unsigned int orderType = rand() % NUMBER_OF_ORDERS;
+        currentOrders[orderType] += 1;
+
+        ordersCooldown = currTime;
+    }
 }
 
 void Tema2::UpdateGame(float deltaTime) {
+
+    float currentTime = glfwGetTime();
+
+    if (currentTime - lastPadCheck <= 5.f) {
+        return;
+    }
 
     int padIndex = -1;
     for (size_t i = 0; i < padsPositions.size(); i++) {
@@ -484,8 +516,7 @@ void Tema2::UpdateGame(float deltaTime) {
 
     if (padIndex == -1)
         return;
-    
-    // main station
+
     if (padIndex == 0) {
         devOrders += totalOrders;
         totalOrders = 0;
@@ -493,14 +524,23 @@ void Tema2::UpdateGame(float deltaTime) {
         for (int i = 0; i < collectedOrders.size(); i++) {
             collectedOrders[i] = 0;
         }
+        lastPadCheck = currentTime;
         std::cout << "Delivered all orders! Total delivered: " << devOrders << "\n";
     } else {
-        // other stations
         int orderType = padIndex - 1;
-        currentOrders[orderType] += 1;
+        
+        if (currentOrders[orderType] > 0) {
+            currentOrders[orderType] -= 1;
+            collectedOrders[orderType] += 1;
+        } else {
+            lastPadCheck = currentTime;
+            return;
+        }
+
         totalOrders += 1;
 
-        std::cout << "Picked up order of type " << orderType + 1 << ". Total orders: " << totalOrders << "\n";
+        lastPadCheck = currentTime;
+        std::cout << "Collected order of type " << orderType + 1 << "\n";
     }
 }
 
@@ -522,15 +562,15 @@ void Tema2::RenderOrders() {
 
     float offset = 2.0f;
     float totalWidth = (availableOrders.size() - 1) * offset;
-    float startX = -totalWidth / 2.0f;
+    float startZ = -totalWidth / 2.0f;
 
     glm::mat4 model;
 
     for (int k = 0; k < availableOrders.size(); k++) {
         unsigned int orderType = availableOrders[k];
 
-        float xPos = startX + k * offset;
-        glm::vec3 orderPos = glm::vec3(xPos, 2.0f, -5.0f);
+        float zPos = startZ + k * offset;
+        glm::vec3 orderPos = glm::vec3(-3.0f, 4.0f, zPos);
         
         model = glm::mat4(1);
         model = glm::translate(model, orderPos);
