@@ -79,6 +79,12 @@ void Tema2::Init() {
 
         Mesh* cube = object3D::RenderCube("cube", glm::vec3(0.f, 0.f, 0.f));
         AddMeshToList(cube);
+
+		Mesh* log = object3D::CreateLog("log", glm::vec3(0.f, 0.f, 0.f));
+		AddMeshToList(log);
+
+		Mesh* pad = object3D::CreatePad("pad", glm::vec3(0.f, 0.f, 0.f));
+		AddMeshToList(pad);
     }
 
     {

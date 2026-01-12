@@ -193,6 +193,31 @@ Mesh* object3D::RenderCube (const std::string& name,
     return cube;
 }
 
+Mesh* object3D::CreateLog(const std::string& name, glm::vec3 position) 
+{
+	std::vector<VertexFormat> vertices;
+	std::vector<unsigned int> indices;
+	glm::vec3 center = position;
+
+	createCylinder3(center, 0.1f, 0.5f, 16, BROWN_COLOR, vertices, indices);
+	Mesh* log = new Mesh(name);
+	log->InitFromData(vertices, indices);
+
+	return log;
+}
+
+Mesh* object3D::CreatePad(const std::string& name, glm::vec3 position)
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, -0.5f);
+
+    createCylinder3(corner, 0.5f, 1.f, 1.f, DARK_GREEN_COLOR, vertices, indices);
+    Mesh* pad = new Mesh(name);
+    pad->InitFromData(vertices, indices);
+	return pad;
+}
+
 Mesh* object3D::CreateLocomotive
     (const std::string &name,
     glm::vec3 position) 
