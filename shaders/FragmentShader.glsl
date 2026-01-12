@@ -5,12 +5,21 @@ layout(location = 0) out vec4 out_color;
 in vec2 frag_texcoord;
 in vec3 frag_color;
 in vec3 frag_position;
+in vec3 frag_normal;
 
 uniform sampler2D texture1; 
 uniform float Time; 
 uniform int useTexture; 
 uniform int isWater;
 uniform int isMountain;
+
+uniform float snowHeight;
+uniform float snowFade;
+uniform float snowSlopeLimit;
+
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+}
 
 void main() {
     if (useTexture == 0) {
@@ -23,6 +32,11 @@ void main() {
                 {
                     discard;
                 }
+            }
+            if (pos.y >= 6.0) {
+                out_color = vec4(1.0, 1.0, 1.0, 1.0);
+
+                return;
             }
 
         out_color = vec4(frag_color, 1.0);
