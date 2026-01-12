@@ -162,6 +162,129 @@ void createCylinder3(glm::vec3 pos,
         }        
     }
 
+void createRoof(glm::vec3 pos,
+    float w, float h, float d,
+    glm::vec3 color,
+    std::vector<VertexFormat>& vertices,
+    std::vector<unsigned int>& indices) {
+        unsigned int start_index = vertices.size();
+
+		vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y, pos.z), color));
+		vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y, pos.z), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y + h, pos.z), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y + h, pos.z), color));
+
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y + h, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y + h, pos.z - d), color));
+
+        unsigned int roof_indices[] = {
+            4,0,3, 3,7,4,
+            3,2,6, 3,6,7,
+			1,5,6, 1,6,2
+		};
+
+        for (unsigned int i : roof_indices) {
+            indices.push_back(start_index + i);
+		}
+    }
+
+void createEgypt(glm::vec3 pos,
+    float w, float h, float d,
+    glm::vec3 color,
+    std::vector<VertexFormat>& vertices,
+    std::vector<unsigned int>& indices) {
+
+        unsigned int start_index = vertices.size();
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y, pos.z), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y, pos.z), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w, pos.y, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x, pos.y, pos.z - d), color));
+        vertices.push_back(VertexFormat(glm::vec3(pos.x + w * 0.5f, pos.y + h, pos.z - d * 0.5f), color));
+
+        unsigned int egypt_indices[] = {
+            0,1,4,
+            1,2,4,
+            2,3,4,
+            3,0,4,
+            3,2,1,
+            3,1,0
+		};
+
+        for (unsigned int i : egypt_indices) {
+            indices.push_back(start_index + i);
+		}
+}
+
+Mesh* object3D::RenderCube (const std::string& name,
+    glm::vec3 position)
+{
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, 0.5f);
+
+    std::vector<VertexFormat> vertices = {
+        VertexFormat(corner, WHITE_COLOR),
+		VertexFormat(corner + glm::vec3(1.f, 0.f, 0.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(1.f, 1.f, 0.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(0.f, 1.f, 0.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(0.f, 0.f, -1.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(1.f, 0.f, -1.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(1.f, 1.f, -1.f), WHITE_COLOR),
+        VertexFormat(corner + glm::vec3(0.f, 1.f, -1.f), WHITE_COLOR),
+    };
+
+    std::vector<unsigned int> indices = {
+        0,1,2, 0,2,3,
+        4,6,5, 4,7,6,
+        4,5,1, 4,1,0,
+        3,2,6, 3,6,7,
+        1,5,6, 1,6,2,
+        4,0,3, 4,3,7
+	};
+
+	Mesh* cube = new Mesh(name);
+	cube->InitFromData(vertices, indices);
+
+    return cube;
+}
+
+Mesh* object3D::CreateLog(const std::string& name, glm::vec3 position) 
+{
+	std::vector<VertexFormat> vertices;
+	std::vector<unsigned int> indices;
+	glm::vec3 center = position;
+
+	createCylinder3(center, 0.1f, 0.5f, 16, BROWN_COLOR, vertices, indices);
+	Mesh* log = new Mesh(name);
+	log->InitFromData(vertices, indices);
+
+	return log;
+}
+
+Mesh* object3D::CreateMountain(const std::string& name, glm::vec3 position)
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+    glm::vec3 corner = position + glm::vec3(-4.f, 0.f, -5.f);
+
+	createEgypt(corner, 8.f, 10.f, 10.f, BROWN_COLOR, vertices, indices);
+    Mesh* mountain = new Mesh(name);
+    mountain->InitFromData(vertices, indices);
+    return mountain;
+}
+
+Mesh* object3D::CreatePad(const std::string& name, glm::vec3 position)
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, -0.5f);
+
+    createCylinder3(corner, 0.5f, 1.f, 1.f, DARK_GREEN_COLOR, vertices, indices);
+    Mesh* pad = new Mesh(name);
+    pad->InitFromData(vertices, indices);
+	return pad;
+}
+
 Mesh* object3D::CreateLocomotive
     (const std::string &name,
     glm::vec3 position) 
@@ -169,7 +292,7 @@ Mesh* object3D::CreateLocomotive
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.45f, 1.f);
     createCube(corner, 1.f, 0.2f, 2.f, YELLOW_COLOR, vertices, indices);
 
     glm::vec3 cabinCorner = corner + glm::vec3(0.f, 0.2f, 0.f);
@@ -208,7 +331,7 @@ Mesh* object3D::CreateCarriage
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.45f, 1.f);
     createCube(corner, 1.f, 0.2f, 2.f, YELLOW_COLOR, vertices, indices);
 
     glm::vec3 cabinCorner = corner + glm::vec3(0.f, 0.2f, 0.f);
@@ -241,7 +364,7 @@ Mesh* object3D::CreateRail
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, 0.5f);
     createCube(corner, 0.2f, 0.04f, 1.f, GRAY_COLOR, vertices, indices);
     createCube(corner + glm::vec3(0.8f, 0.f, 0.f), 0.2f, 0.04f, 1.f, GRAY_COLOR, vertices, indices);
 
@@ -252,6 +375,24 @@ Mesh* object3D::CreateRail
     return rail;
 }
 
+Mesh* object3D::CreateTunnelRail(const std::string& name, glm::vec3 position)
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, 0.5f);
+    createCube(corner, 0.2f, 0.04f, 1.f, GRAY_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(0.8f, 0.f, 0.f), 0.2f, 0.04f, 1.f, GRAY_COLOR, vertices, indices);
+
+    glm::vec3 c1 = corner + glm::vec3(-0.1f, 0.f, 0.f);
+	createRoof(c1, 1.2f, 2.4f, 1.f, DARK_GRAY_COLOR, vertices, indices);
+
+	Mesh* rail = new Mesh(name);
+	rail->InitFromData(vertices, indices);
+
+	return rail;
+}
+
 Mesh* object3D::CreateBridgeRail
     (const std::string &name, 
         glm::vec3 position) 
@@ -259,7 +400,7 @@ Mesh* object3D::CreateBridgeRail
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, 0.5f);
 
     createCube(corner, 0.2f, 0.04f, 5.f, GRAY_COLOR, vertices, indices);
     createCube(corner + glm::vec3(0.8f, 0.f, 0.f), 0.2f, 0.04f, 5.f, GRAY_COLOR, vertices, indices);
@@ -348,16 +489,16 @@ Mesh* object3D::CreateStation1
     (const std::string &name,
     glm::vec3 position)
 {
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-7.5f, 0.f, 7.5f);
 
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    createCube(corner, 10.f, 5.f, 10.f, glm::vec3(0.5f, 0.5f, 0.5f), vertices, indices);
-    createCube(corner + glm::vec3(-1.f, 0.f, 1.f), 2.f, 8.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
-    createCube(corner + glm::vec3(9.f, 0.f, 1.f), 2.f, 8.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
-    createCube(corner + glm::vec3(-1.f, 0.f, -9.f), 2.f, 8.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
-    createCube(corner + glm::vec3(9.f, 0.f, -9.f), 2.f, 8.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
+    createCube(corner, 15.f, 10.f, 15.f, glm::vec3(0.5f, 0.5f, 0.5f), vertices, indices);
+    createCube(corner + glm::vec3(-1.f, 0.f, 1.f), 2.f, 12.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(14.f, 0.f, 1.f), 2.f, 12.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(-1.f, 0.f, -14.f), 2.f, 12.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
+    createCube(corner + glm::vec3(14.f, 0.f, -14.f), 2.f, 12.f, 2.f, DARK_GRAY_COLOR, vertices, indices);
 
     Mesh* station = new Mesh(name);
     station->InitFromData(vertices, indices);
@@ -369,16 +510,16 @@ Mesh* object3D::CreateStation2
     (const std::string &name,
     glm::vec3 position)
 {
-    glm::vec3 corner = position;
+    glm::vec3 corner = position + glm::vec3(-6.f, 0.f, -6.f);
 
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    createCube(corner, 8.f, 4.f, 8.f, glm::vec3(0.8f, 0.5f, 0.2f), vertices, indices);
-    createCylinder3(corner, 2.f, 5.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
-    createCylinder3(corner + glm::vec3(8.f, 0.f, 0.f), 2.f, 5.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
-    createCylinder3(corner + glm::vec3(0.f, 0.f, -8.f), 2.f, 5.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
-    createCylinder3(corner + glm::vec3(8.f, 0.f, -8.f), 2.f, 5.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
+    createCube(corner, 12.f, 8.f, 12.f, glm::vec3(0.8f, 0.5f, 0.2f), vertices, indices);
+    createCylinder3(corner, 1.f, 10.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
+    createCylinder3(corner + glm::vec3(12.f, 0.f, 0.f), 1.f, 10.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
+    createCylinder3(corner + glm::vec3(0.f, 0.f, -12.f), 1.f, 10.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
+    createCylinder3(corner + glm::vec3(12.f, 0.f, -12.f), 1.f, 10.f, 20, glm::vec3(0.6f, 0.3f, 0.1f), vertices, indices);
 
     Mesh* station = new Mesh(name);
     station->InitFromData(vertices, indices);

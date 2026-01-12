@@ -15,97 +15,122 @@ namespace t2
 {
     class Tema2 : public gfxc::SimpleScene
     {
-        public:
+    public:
 
-            enum TrainType {
-                TRAIN = 0,
-                CARRIAGE = 1
-            };
+        enum TrainType {
+            TRAIN = 0,
+            CARRIAGE = 1
+        };
 
-            struct Train {
-                TrainType type;
-                Direction trainDir;
-                glm::vec3 gridPos;
-                float progress;
-                float speed;
-            };
+        struct Train {
+			glm::ivec2 gridPos;
+            TrainType type;
+            Direction trainDir;
+            float progress;
+            float speed;
 
-            Tema2();
-            ~Tema2();
+            Direction nextDir;
+            bool request;
+        };
 
-            void Init() override;
+        Tema2();
+        ~Tema2();
 
-        private:
-            void FrameStart() override;
-            void Update(float deltaTimeSeconds) override;
-            void FrameEnd() override;
+        void Init() override;
 
-            glm::vec3 lerp(glm::vec3 start, glm::vec3 end, float t);
+    private:
+        void FrameStart() override;
+        void Update(float deltaTimeSeconds) override;
+        void FrameEnd() override;
 
-            void UpdateTrain(Train& train, float deltaTime, RailGrid& grid);
+        glm::vec3 lerp(glm::vec3 start, glm::vec3 end, float t);
 
-            glm::vec3 directionToWorld(Direction dir);
-            Direction turnLeft(Direction dir);
-            Direction turnRight(Direction dir);
-            Direction goBack(Direction dir);
+        void UpdateTrain(Train& train, float deltaTime, RailGrid& grid);
 
-            glm::vec3 gridToWorld(int x, int y);
-            glm::ivec2 worldToGrid(const glm::vec3& pos);
+        Direction turnLeft(Direction dir);
+        Direction turnRight(Direction dir);
+        Direction goBack(Direction dir);
 
-            glm::vec3 getTrainPos(const Train& train);
-            glm::vec3 getCarriagePos(int index);
+        glm::vec3 gridToWorld(int x, int y);
+        glm::ivec2 worldToGrid(const glm::vec3& pos);
 
-            float yawFromDir(Direction dir);
-            float yawRailFromCell(const Cell& cell);
+        glm::vec3 getTrainPos(const Train& train, const RailGrid& grid);
+        glm::vec3 getCarriagePos(int index);
 
-            void DrawTrain(const Train& train, const RailGrid& grid);
-            void DrawCarriages();
-            void RenderRails();
+        float yawFromDir(Direction dir);
 
-            void RenderMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix, Texture2D *texture=NULL);
-            void RenderMeshMini(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix, Texture2D *texture = NULL);
-            void MinimapRender();
+        void DrawTrain(const Train& train, const RailGrid& grid);
+        void DrawCarriages();
+        void RenderRails();
+		void RenderRailsMini();
+		void DrawTrainMini(const Train& train, const RailGrid& grid);
 
-            glm::vec3 directionToVector(Direction dir);
+		void GameOn(float deltaTime);
+		void MainMenu(float deltaTime);
 
-            Direction intToDirection(int dirInt);
-            int directionToInt(Direction dir);
+        void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = NULL);
+        void RenderMeshMini(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = NULL);
+        void MinimapRender();
 
-            void OnInputUpdate(float deltaTime, int mods) override;
-            void OnKeyPress(int key, int mods) override;
-            void OnKeyRelease(int key, int mods) override;
-            void OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) override;
-            void OnMouseBtnPress(int mouseX, int mouseY, int button, int mods) override;
-            void OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods) override;
-            void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
-            void OnWindowResize(int width, int height) override;
+        glm::vec3 directionToVector(Direction dir);
+        glm::vec3 directionToWorld(Direction dir);
 
-        protected:
-            std::vector<Train> trains;
+        Direction intToDirection(int dirInt);
+        int directionToInt(Direction dir);
+		Direction opposite(Direction dir);
 
-            int numberOfTrains = 1;
-            int numberOfCarriages = 1;
+        void OnInputUpdate(float deltaTime, int mods) override;
+        void OnKeyPress(int key, int mods) override;
+        void OnKeyRelease(int key, int mods) override;
+        void OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY) override;
+        void OnMouseBtnPress(int mouseX, int mouseY, int button, int mods) override;
+        void OnMouseBtnRelease(int mouseX, int mouseY, int button, int mods) override;
+        void OnMouseScroll(int mouseX, int mouseY, int offsetX, int offsetY) override;
+        void OnWindowResize(int width, int height) override;
 
-            RailGrid railsGrid{50, 50};
-            float CELL_SIZE = 1.f;
-            int gridWidth = 50;
-            int gridHeight = 50;
+    protected:
+        std::vector<Train> trains;
 
-            int direction;
-            int availableDirections[4];
-            int firstAvailableDirection;
-            bool railChanged = false;
+        int numberOfTrains = 1;
+        int numberOfCarriages = 1;
 
-            std::deque<glm::vec3> trainPath;
-            const float CARRIAGE_DISTANCE = 1.5f;
+        RailGrid railsGrid{ 50, 50 };
+        float CELL_SIZE = 1.f;
+        int gridWidth = 50;
+        int gridHeight = 50;
 
-            camera::Camera *camera;
-            camera::Camera *minimapCam;
+		glm::vec3 RAIL_PIVOT_OFF = glm::vec3(0.5f, 0.f, 0.5f);
 
-            glm::mat4 minimapProjMatrix;
-            glm::mat4 projectionMatrix;
-            bool renderCameraTarget;
+        int input;
+        int direction;
+        bool trainWaiting;
 
-            std::unordered_map<std::string, Texture2D *> mapTextures;
+        std::deque<glm::vec3> trainPath;
+        const float CARRIAGE_DISTANCE = 1.5f;
+
+        camera::Camera* camera;
+        camera::Camera* minimapCam;
+
+        glm::mat4 minimapProjMatrix;
+        glm::mat4 projectionMatrix;
+        bool renderCameraTarget;
+
+		// gfxc::TextRenderer* textRenderer;
+
+        bool startGame;
+        bool goBackMenu;
+        float wantedSpeed;
+        float maxSpeed = 7.f;
+        float minSpeed = 2.f;
+
+		int difficultyLevel;
+
+        unsigned int totalOrders;
+		unsigned int devOrders;
+        unsigned int ordersType = 3;
+		std::vector<unsigned int> currentOrders;
+		std::vector<unsigned int> collectedOrders;
+
+        std::unordered_map<std::string, Texture2D*> mapTextures;
     };
 }
