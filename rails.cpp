@@ -75,6 +75,14 @@ namespace t2 {
 		return getRailType(x, y) != RailType::NULLRAIL;
     }
 
+    bool RailGrid::tryGetCell(int x, int y, Cell& outCell) const {
+        if (x < 0 || y < 0 || x >= width || y >= height) {
+            return false;
+        }
+        outCell = cells[y * width + x];
+        return true;
+    }
+
     bool RailGrid::getNextCell(int x, int y, Direction dir, int& xout, int& yout) {
 		Cell& cell = getCell(x, y);
 		int dirIdx = directionToInt(dir);

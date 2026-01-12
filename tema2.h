@@ -67,19 +67,24 @@ namespace t2
 
         float yawFromDir(Direction dir);
 
-        void DrawTrain(const Train& train, const RailGrid& grid);
-        void DrawCarriages();
         void RenderRails();
 		void RenderRailsMini();
         void RenderOrders();
+        
+        void DrawTrain(const Train& train, const RailGrid& grid);
 		void DrawTrainMini(const Train& train, const RailGrid& grid);
         void DrawStations();
         void DrawStation(glm::vec3 position, Mesh* stationMesh);
         void DrawStationsMini();
         void DrawStationMini(glm::vec3 position, Mesh* stationMesh);
-
+        void DrawCarriages(const Train& headTrain, const RailGrid& grid);
+        
         void DrawPads();
         void DrawPadMini();
+
+        glm::ivec2 moveDir(glm::ivec2 p, Direction dir);
+        glm::vec3 cellProgressPos(glm::ivec2 cell, Direction d, float progress);
+        bool SampleRailPath(const Train& head, const RailGrid& grid, float distanceBack, glm::vec3& outPos, Direction& outDir);
 
         bool isInStationProximity(const glm::vec3& trainPos, glm::vec2& padPos);
 
@@ -145,7 +150,7 @@ namespace t2
         float maxSpeed = 7.f;
         float minSpeed = 2.f;
 
-		int difficultyLevel;
+		int windowSelected;
 
         float gameTime;
         float timeElapsed;

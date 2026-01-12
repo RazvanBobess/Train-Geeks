@@ -46,6 +46,9 @@ namespace t2 {
 		void buildDefaultNeighbors();
         bool canMove(int x, int y, Direction dir);
         glm::ivec2 dirOffset(Direction dir);
+
+        bool tryGetCell(int x, int y, Cell& outCell) const; 
+
         Direction intToDirection(int value) {
             switch (value) {
             case 0:

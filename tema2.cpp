@@ -288,6 +288,7 @@ void Tema2::Init() {
 
     direction = 0;
 	trainWaiting = true;
+    windowSelected = 0;
 
     {
         gameTime = INITIAL_GAME_TIME;
@@ -335,10 +336,11 @@ void Tema2::FrameStart() {
 
 void Tema2::Update(float deltaTimeSeconds) {
     timeElapsed -= deltaTimeSeconds;
-    bool gameDone = (gameTime <= 0.f);
+    bool gameDone = (timeElapsed <= 0.f);
 
-    if (gameDone) {
-        // Game over logic
+    if (gameDone && !windowSelected) {
+        windowSelected = 0;
+        MainMenu(deltaTimeSeconds);
         return;
     } else {
         GameOn(deltaTimeSeconds);
@@ -453,7 +455,7 @@ void Tema2::GameOn(float deltaTime) {
 
     {
         glm::ivec2 windowRes = window->GetResolution();
-        std::string timeMessage = "Time: " + to_string(int(gameTime)) + " seconds";
+        std::string timeMessage = "Time: " + to_string(int(timeElapsed)) + " seconds";
         textRenderer->RenderText(timeMessage, 10, windowRes.y - 20, 0.7f, glm::vec3(1, 1, 1));
 
         glm::string orderMess = "Current Orders:";
@@ -477,6 +479,8 @@ void Tema2::GameOn(float deltaTime) {
     DrawStations();
     RenderRails();
 
+    DrawCarriages(trains[0], railsGrid);
+
     DrawPads();
     RenderOrders();
     UpdateGame(deltaTime);
@@ -487,6 +491,11 @@ void Tema2::GameOn(float deltaTime) {
 
     if (currTime - ordersCooldown >= 5.0) {
         totalOrders += 1;
+
+        if (totalOrders > 6) {
+            ordersCooldown = currTime;
+            return;
+        }
 
         unsigned int orderType = rand() % NUMBER_OF_ORDERS;
         currentOrders[orderType] += 1;
@@ -544,8 +553,81 @@ void Tema2::UpdateGame(float deltaTime) {
     }
 }
 
+glm::ivec2 Tema2::moveDir(glm::ivec2 p, Direction dir) {
+    switch (dir) {
+        case Direction::NORTH: return {p.x, p.y - 1};
+        case Direction::EAST:  return {p.x + 1, p.y};
+        case Direction::SOUTH: return {p.x, p.y + 1};
+        case Direction::WEST:  return {p.x - 1, p.y};
+    }
+    return p;
+}
+
+glm::vec3 Tema2::cellProgressPos(glm::ivec2 cell, Direction d, float progress) {
+    float cellSize = CELL_SIZE;
+
+    float x = (cell.x - gridWidth / 2.f) * cellSize;
+    float z = (cell.y - gridHeight / 2.f) * cellSize;
+
+    glm::vec3 dirVec;
+    switch (d) {
+        case Direction::NORTH: dirVec = glm::vec3(0.f, 0.f, -1.f); break;
+        case Direction::EAST:  dirVec = glm::vec3(1.f, 0.f, 0.f);  break;
+        case Direction::SOUTH: dirVec = glm::vec3(0.f, 0.f, 1.f);  break;
+        case Direction::WEST:  dirVec = glm::vec3(-1.f, 0.f, 0.f); break;
+    }
+
+    return {x + dirVec.x * progress * cellSize, 0.8f, z + dirVec.z * progress * cellSize};
+}
+
+bool Tema2::SampleRailPath(const Train& head, const RailGrid& grid, float distanceBack, glm::vec3& outPos, Direction& outDir) {
+    glm::ivec2 cell = head.gridPos;
+    Direction dir = head.trainDir;
+    float localProgress = head.progress;
+
+    float remaining = distanceBack;
+
+    float distInCell = localProgress * CELL_SIZE;
+    if (remaining <= distInCell) {
+        float p = (distInCell - remaining) / CELL_SIZE;
+        outPos = cellProgressPos(cell, dir, p);
+        outDir = dir;
+        return true;
+    }
+
+    remaining -= distInCell;
+
+    Direction backDir = opposite(dir);
+    cell = moveDir(cell, backDir);
+
+    Cell cellData;
+
+    while (remaining > 0) {
+        if (!grid.tryGetCell(cell.x, cell.y, cellData))
+            return false;
+
+        if (remaining <= CELL_SIZE) {
+            float p = 1.f - (remaining / CELL_SIZE);
+            outPos = cellProgressPos(cell, backDir, p);
+            outDir = backDir;
+            return true;
+        }
+
+        remaining -= CELL_SIZE;
+        cell = moveDir(cell, backDir);
+    }
+
+    return false;
+}
+
 void Tema2::MainMenu(float deltaTime) {
-    // Code for main menu rendering
+    glm::ivec2 windowRes = window->GetResolution();
+
+    std::string startMessage = "Press ENTER to start the game!";
+    textRenderer->RenderText(startMessage, windowRes.x / 2 - 150, windowRes.y / 2, 1.0f, glm::vec3(1, 1, 1));
+    
+    std::string totalMessage = "Total Delivered Orders: " + std::to_string(devOrders);
+    textRenderer->RenderText(totalMessage, windowRes.x / 2 - 150, windowRes.y / 2 - 30, 1.0f, glm::vec3(1, 1, 1));
 }
 
 void Tema2::RenderOrders() {
@@ -760,12 +842,32 @@ void Tema2::DrawTrainMini(const Train& train, const RailGrid& grid) {
     RenderMeshMini(meshes["cube"], shaders["VC"], modelMatrix);
 }
 
-void Tema2::DrawCarriages() {
+void Tema2::DrawCarriages(const Train& train, const RailGrid& grid) {
+    float wagonSpace = 1.2f;
+
     for (int i = 0; i < numberOfCarriages; i++) {
-        glm::vec3 pos = getCarriagePos(i + 1);
+        float dist = (i + 1) * wagonSpace;
+
+        glm::vec3 wagonPos;
+        Direction wagonDir;
+
+        if (!SampleRailPath(train, grid, dist, wagonPos, wagonDir)) {
+            continue;
+        }
 
         glm::mat4 modelMatrix(1.0f);
-        modelMatrix = glm::translate(modelMatrix, pos);
+        modelMatrix = glm::translate(modelMatrix, wagonPos);
+
+        float yaw = 0.f;
+
+        switch (wagonDir) {
+            case Direction::NORTH: yaw = glm::pi<float>(); break;
+            case Direction::EAST:  yaw = -glm::half_pi<float>(); break;
+            case Direction::SOUTH: yaw = 0.f; break;
+            case Direction::WEST:  yaw = glm::half_pi<float>(); break;
+        }
+
+        modelMatrix = glm::rotate(modelMatrix, yaw, glm::vec3(0,1,0));
 
         RenderMesh(meshes["carriage1"], shaders["VC"], modelMatrix);
     }
@@ -1257,6 +1359,11 @@ int Tema2::directionToInt(Direction dir) {
 
 void Tema2::OnKeyPress(int key, int mods) {
     // Handle key press events here
+    if (key == GLFW_KEY_ENTER && windowSelected == 0) {
+        windowSelected = 1;
+        return;
+    }
+
     if (key == GLFW_KEY_T) {
         renderCameraTarget = !renderCameraTarget;
     }
