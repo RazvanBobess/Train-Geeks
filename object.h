@@ -39,6 +39,8 @@ namespace object3D
     
     Mesh* CreateStation3(const std::string &name, glm::vec3 position);
 
+    Mesh* CreateStation4(const std::string &name, glm::vec3 position);
+
 	Mesh* RenderCube(const std::string& name, glm::vec3 position);
 
 	Mesh* CreateLog(const std::string& name, glm::vec3 position);

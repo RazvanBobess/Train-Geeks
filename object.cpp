@@ -279,7 +279,7 @@ Mesh* object3D::CreatePad(const std::string& name, glm::vec3 position)
     std::vector<unsigned int> indices;
     glm::vec3 corner = position + glm::vec3(-0.5f, 0.f, -0.5f);
 
-    createCylinder3(corner, 0.5f, 1.f, 1.f, YELLOW_COLOR, vertices, indices);
+    createCylinder3(corner, 0.5f, 0.5f, 16, YELLOW_COLOR, vertices, indices);
     Mesh* pad = new Mesh(name);
     pad->InitFromData(vertices, indices);
 	return pad;

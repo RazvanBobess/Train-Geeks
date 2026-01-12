@@ -103,7 +103,9 @@ void Tema2::Init() {
     }
 
     {
-        padsPositions.push_back(glm::vec2(0.f, 0.f));
+        padsPositions.push_back(glm::vec2(0.5f, -7.f));
+        padsPositions.push_back(glm::vec2(21.5f, 14.f));
+        padsPositions.push_back(glm::vec2(-18.5f, 18.f));
     }
 
     {
@@ -704,7 +706,7 @@ void Tema2::DrawStationMini(glm::vec3 position, Mesh* stationMesh) {
 
 void Tema2::DrawStationsMini() {
     for (int i = 0; i < stationPositions.size(); i++) {
-        glm::vec3 pos = glm::vec3(stationPositions[i].x, 0.8f, stationPositions[i].y);
+        glm::vec3 pos = glm::vec3(stationPositions[i].x, 0.4f, stationPositions[i].y);
 
         switch (i) {
             case 0:
@@ -722,7 +724,7 @@ void Tema2::DrawStationsMini() {
 
 void Tema2::DrawPads() {
     for (int i = 0; i < padsPositions.size(); i++) {
-        glm::vec3 pos = glm::vec3(padsPositions[i].x, 2.f, padsPositions[i].y);
+        glm::vec3 pos = glm::vec3(padsPositions[i].x, 0.4f, padsPositions[i].y);
 
         glm::mat4 modelMatrix(1.0f);
         modelMatrix = glm::translate(modelMatrix, pos);
@@ -732,7 +734,7 @@ void Tema2::DrawPads() {
 
 void Tema2::DrawPadMini() {
     for (int i = 0; i < padsPositions.size(); i++) {
-        glm::vec3 pos = glm::vec3(padsPositions[i].x, 2.f, padsPositions[i].y);
+        glm::vec3 pos = glm::vec3(padsPositions[i].x, 0.8f, padsPositions[i].y);
 
         glm::mat4 modelMatrix(1.0f);
         modelMatrix = glm::translate(modelMatrix, pos);
