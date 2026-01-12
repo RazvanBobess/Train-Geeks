@@ -92,6 +92,12 @@ void Tema2::Init() {
 		Mesh* log = object3D::CreateLog("log", glm::vec3(0.f, 0.f, 0.f));
 		AddMeshToList(log);
 
+        Mesh* barrel = object3D::CreateBarrel("barrel", glm::vec3(0.f, 0.f, 0.f));
+        AddMeshToList(barrel);
+
+        Mesh* powder = object3D::CreatePowder("powder", glm::vec3(0.f, 0.f, 0.f));
+        AddMeshToList(powder);
+
 		Mesh* pad = object3D::CreatePad("pad", glm::vec3(0.f, 0.f, 0.f));
 		AddMeshToList(pad);
 
@@ -110,6 +116,7 @@ void Tema2::Init() {
         padsPositions.push_back(glm::vec2(0.5f, -7.f));
         padsPositions.push_back(glm::vec2(21.5f, 14.f));
         padsPositions.push_back(glm::vec2(-18.5f, 18.f));
+        padsPositions.push_back(glm::vec2(-18.5f, -12.5f));
     }
 
     {
@@ -428,6 +435,10 @@ void Tema2::GameOn(float deltaTime) {
     MinimapRender();
 }
 
+void Tema2::UpdateGame(float deltaTime) {
+    // Code for updating game state
+}
+
 void Tema2::MainMenu(float deltaTime) {
     // Code for main menu rendering
 }
@@ -685,6 +696,7 @@ void Tema2::DrawStation(glm::vec3 position, Mesh* stationMesh) {
 }
 
 void Tema2::DrawStations() {
+    glm::mat4 model;
     for (int i = 0; i < stationPositions.size(); i++) {
         glm::vec3 pos = glm::vec3(stationPositions[i].x, 0.8f, stationPositions[i].y);
 
@@ -694,12 +706,33 @@ void Tema2::DrawStations() {
                 break;
             case 1:
                 DrawStation(pos, meshes["station2"]);
+
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(pos.x, 3.f, pos.z));
+                model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.f, 0.f, 0.f));
+                model = glm::scale(model, glm::vec3(2.f, 4.f, 3.f));
+                RenderMesh(meshes["log"], shaders["VC"], model);
+
                 break;
             case 2:
                 DrawStation(pos, meshes["station3"]);
+
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(pos.x - 0.2f, 5.f, pos.z + 0.3f));
+                model = glm::rotate(model, glm::radians(-45.0f), glm::vec3(1.f, 0.f, 0.f));
+                model = glm::scale(model, glm::vec3(1.5f));
+                RenderMesh(meshes["barrel"], shaders["VC"], model);
+
                 break;
             case 3:
                 DrawStation(pos, meshes["station4"]);
+
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(pos.x + 0.6f, 4.f, pos.z + 1.1f));
+                model = glm::rotate(model, glm::radians(35.0f), glm::vec3(1.f, 0.f, 0.f));
+                model = glm::scale(model, glm::vec3(4.f));
+                RenderMesh(meshes["powder"], shaders["VC"], model);
+
                 break;
         }
     }
@@ -750,6 +783,14 @@ void Tema2::DrawPadMini() {
         modelMatrix = glm::translate(modelMatrix, pos);
         RenderMeshMini(meshes["pad"], shaders["VC"], modelMatrix);
     }
+}
+
+bool Tema2::isInStationProximity(const glm::vec3& trainPos, glm::vec2& padPos) {
+    if (trainPos.x >= padPos.x - TRAIN_PROXIMITY && trainPos.x <= padPos.x + TRAIN_PROXIMITY &&
+        trainPos.z >= padPos.y - TRAIN_PROXIMITY && trainPos.z <= padPos.y + TRAIN_PROXIMITY) {
+        return true;
+    }
+    return false;
 }
 
 void Tema2::RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture) {

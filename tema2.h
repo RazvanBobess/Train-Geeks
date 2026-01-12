@@ -6,10 +6,13 @@
 
 #include "components/simple_scene.h"
 #include "components/transform.h"
+#include "components/text_renderer.h"
 
 #include "lab_m1/tema2/camera.h"
 #include "lab_m1/tema2/object.h"
 #include "lab_m1/tema2/rails.h"
+
+#define TRAIN_PROXIMITY 0.5f
 
 namespace t2
 {
@@ -72,7 +75,10 @@ namespace t2
         void DrawPads();
         void DrawPadMini();
 
+        bool isInStationProximity(const glm::vec3& trainPos, glm::vec2& padPos);
+
 		void GameOn(float deltaTime);
+        void UpdateGame(float deltaTime);
 		void MainMenu(float deltaTime);
 
         void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, Texture2D* texture = NULL);
@@ -122,7 +128,7 @@ namespace t2
         glm::mat4 projectionMatrix;
         bool renderCameraTarget;
 
-		// gfxc::TextRenderer* textRenderer;
+		gfxc::TextRenderer* textRenderer;
 
         std::vector<glm::vec2> stationPositions;
         std::vector<glm::vec2> padsPositions;
@@ -134,6 +140,11 @@ namespace t2
         float minSpeed = 2.f;
 
 		int difficultyLevel;
+
+        float gameTime;
+        float timeElapsed;
+
+        float ordersCooldown;
 
         unsigned int totalOrders;
 		unsigned int devOrders;

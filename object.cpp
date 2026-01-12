@@ -261,6 +261,32 @@ Mesh* object3D::CreateLog(const std::string& name, glm::vec3 position)
 	return log;
 }
 
+Mesh* object3D::CreateBarrel(const std::string& name, glm::vec3 position)
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+    glm::vec3 corner = position + glm::vec3(-0.3f, 0.f, -0.3f);
+
+    createCylinder3(corner, 0.3f, 0.5f, 16, GRAY_COLOR, vertices, indices);
+    createCylinder3(corner + glm::vec3(0.f, 0.1f, 0.f), 0.2f, 0.42f, 16, DARK_GRAY_COLOR, vertices, indices);
+
+    Mesh* barrel = new Mesh(name);
+    barrel->InitFromData(vertices, indices);
+    return barrel;
+}
+
+Mesh* object3D::CreatePowder(const std::string& name, glm::vec3 position)
+{
+    std::vector<VertexFormat> vertices;
+    std::vector<unsigned int> indices;
+    glm::vec3 corner = position + glm::vec3(-0.2f, 0.f, -0.2f);
+
+    createEgypt(corner, 0.4f, 0.4f, 0.4f, DARK_GRAY_COLOR, vertices, indices);
+    Mesh* powder = new Mesh(name);
+    powder->InitFromData(vertices, indices);
+    return powder;
+}
+
 Mesh* object3D::CreateMountain(const std::string& name, glm::vec3 position)
 {
     std::vector<VertexFormat> vertices;
@@ -543,7 +569,7 @@ Mesh* object3D::CreateStation3
     std::vector<VertexFormat> vertices;
     std::vector<unsigned int> indices;
 
-    createCylinder3(center, 1.2f, 2.f, 20, PURPLE_COLOR, vertices, indices);
+    createCylinder3(center, 1.2f, 2.f, 20, RED_COLOR, vertices, indices);
     createCylinder3(corner, 0.2f, 3.f, 20, DARK_GRAY_COLOR, vertices, indices);
     createCylinder3(corner + glm::vec3(2.2f, 0.f, 0.f), 0.2f, 3.f, 20, DARK_GRAY_COLOR, vertices, indices);
     createCylinder3(corner + glm::vec3(0.f, 0.f, -2.2f), 0.2f, 3.f, 20, DARK_GRAY_COLOR, vertices, indices);
