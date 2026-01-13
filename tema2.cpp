@@ -843,7 +843,7 @@ void Tema2::DrawTrainMini(const Train& train, const RailGrid& grid) {
 }
 
 void Tema2::DrawCarriages(const Train& train, const RailGrid& grid) {
-    float wagonSpace = 1.2f;
+    float wagonSpace = 2.1f;
 
     for (int i = 0; i < numberOfCarriages; i++) {
         float dist = (i + 1) * wagonSpace;
@@ -854,6 +854,8 @@ void Tema2::DrawCarriages(const Train& train, const RailGrid& grid) {
         if (!SampleRailPath(train, grid, dist, wagonPos, wagonDir)) {
             continue;
         }
+
+        wagonPos = getTrainPos(train, grid) - (directionToWorld(wagonDir) * -dist);
 
         glm::mat4 modelMatrix(1.0f);
         modelMatrix = glm::translate(modelMatrix, wagonPos);

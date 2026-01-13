@@ -116,7 +116,7 @@ namespace t2
         std::vector<Train> trains;
 
         int numberOfTrains = 1;
-        int numberOfCarriages = 1;
+        int numberOfCarriages = 2;
 
         RailGrid railsGrid{ 50, 50 };
         float CELL_SIZE = 1.f;

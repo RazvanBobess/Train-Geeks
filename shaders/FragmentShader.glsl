@@ -8,7 +8,7 @@ in vec3 frag_position;
 in vec3 frag_normal;
 
 uniform sampler2D texture1; 
-uniform float Time; 
+uniform float Time;
 uniform int useTexture; 
 uniform int isWater;
 uniform int isMountain;
